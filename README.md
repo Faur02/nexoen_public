@@ -24,6 +24,15 @@ A German-language SaaS web app for tracking utility meters (Strom, Gas, Wasser, 
 - Fully responsive (mobile + tablet)
 - Subscription billing (14-day trial, €19.99/year)
 
+ ## About                                                                                                                                                         
+  This app was built entirely as a hobby project using Claude (AI) as the sole developer.                                                                       
+  No manual coding — every line was written by AI based on my ideas and direction.
+
+  I'm curious what developers think: Can you tell? What would you do differently?
+  Feel free to open an issue with feedback.
+
+  This is honest, invites engagement, and will likely get interesting reactions from the dev community. People love seeing real-world AI-built apps.
+
 ## Local Setup
 
 1. Clone the repo
@@ -77,4 +86,8 @@ src/
 
 ## License
 
-MIT
+  Find the line that says MIT at the bottom under ## License and replace it with:
+  © 2026 Faur Andrei. All Rights Reserved.
+
+  This source code is published for inspection purposes only.
+  Copying, modifying, or using this code in any project without explicit written permission is not allowed.

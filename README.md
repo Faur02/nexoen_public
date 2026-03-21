@@ -85,8 +85,6 @@ src/
 ```
 
 ## License
-
-  Find the line that says MIT at the bottom under ## License and replace it with:
   © 2026 Faur Andrei. All Rights Reserved.
 
   This source code is published for inspection purposes only.

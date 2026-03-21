@@ -382,10 +382,10 @@ export default function PressePage() {
                   className="w-24 h-24 rounded-full flex-shrink-0 flex items-center justify-center text-white text-2xl font-bold shadow-lg"
                   style={{ background: 'linear-gradient(135deg, #1D7874 0%, #2FAE8E 100%)' }}
                 >
-                  AF
+                  YN
                 </div>
                 <div className="text-center md:text-left">
-                  <h2 className="font-display text-2xl font-bold mb-1">Andrei Faur</h2>
+                  <h2 className="font-display text-2xl font-bold mb-1">[YOUR NAME]</h2>
                   <p className="text-teal-600 font-medium mb-4 text-sm">Gründer &amp; Entwickler</p>
                   <p className="text-slate-600 leading-relaxed mb-5">
                     Webdesigner und Entwickler aus Deutschland. Mit nexoen entwickelt er digitale Tools,

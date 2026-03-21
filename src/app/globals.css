@@ -1,0 +1,330 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-body);
+  --font-heading: var(--font-heading);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+
+  /* Nexo custom colors */
+  --color-nexo-lavender: #f0edf5;
+  --color-nexo-peach: #fff4ed;
+  --color-nexo-peach-dark: #e8956d;
+  --color-nexo-orange: #e8956d;
+  --color-nexo-yellow: #f5c542;
+  --color-nexo-blue: #5b8def;
+  --color-nexo-green: #2cb67d;
+  --color-nexo-teal: #2cb6a0;
+  --color-nexo-purple: #7c5cbf;
+  --color-nexo-dark: #2d2a3e;
+  --color-nexo-text: #2d2a3e;
+  --color-nexo-text-muted: #9b95a8;
+  --color-nexo-cta: #1D7874;
+
+  /* Design system - text */
+  --color-text-primary: #1F2937;
+  --color-text-secondary: #6B7280;
+  --color-text-muted: #9CA3AF;
+
+  /* Design system - status cards */
+  --color-card-negative-bg: #FFF1E8;
+  --color-card-negative-text: #E28A5C;
+  --color-card-positive-bg: #E7F7F2;
+  --color-card-positive-text: #2FAE8E;
+
+  /* Design system - meter types */
+  --color-meter-strom: #5B8DEF;
+  --color-meter-heizung: #E6A65C;
+  --color-meter-wasser: #2FAE8E;
+  --color-meter-gas: #E28A5C;
+}
+
+:root {
+  --radius: 0.875rem;
+  --background: #F7F6FB;
+  --foreground: #2d2a3e;
+  --card: #ffffff;
+  --card-foreground: #2d2a3e;
+
+  /* Nexo design system — auto-switch in dark mode */
+  --nexo-text-primary: #1F2937;
+  --nexo-text-secondary: #6B7280;
+  --nexo-text-muted: #9CA3AF;
+  --nexo-card-bg: #FFFFFF;
+  --nexo-card-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  --nexo-border: #E5E7EB;
+  --nexo-border-light: #F3F4F6;
+  --nexo-hover-bg: #F9FAFB;
+  --nexo-surface: #F3F4F6;
+  --nexo-nachzahlung-bg: #FFF1E8;
+  --nexo-nachzahlung-text: #E28A5C;
+  --nexo-nachzahlung-tint: #FFF9F5;
+  --nexo-guthaben-bg: #E7F7F2;
+  --nexo-guthaben-text: #2FAE8E;
+  --nexo-guthaben-tint: #F5FDF9;
+  --nexo-nachzahlung-border: rgba(226, 138, 92, 0.25);
+  --nexo-nachzahlung-border-dashed: rgba(226, 138, 92, 0.3);
+  --nexo-guthaben-border: rgba(47, 174, 142, 0.25);
+  --nexo-guthaben-border-dashed: rgba(47, 174, 142, 0.3);
+  --nexo-badge-active-bg: #E7F7F2;
+  --nexo-badge-active-text: #1D7874;
+  --nexo-cta: #1D7874;
+  --nexo-illustration-opacity: 0.9;
+  --nexo-illustration-glow: transparent;
+  --nexo-progress-track: #F3F4F6;
+  --nexo-progress-avg: #D1D5DB;
+  --nexo-divider: #E5E7EB;
+  --popover: #ffffff;
+  --popover-foreground: #2d2a3e;
+  --primary: #1D7874;
+  --primary-foreground: #ffffff;
+  --secondary: #f0edf5;
+  --secondary-foreground: #2d2a3e;
+  --muted: #f0edf5;
+  --muted-foreground: #9b95a8;
+  --accent: #f0edf5;
+  --accent-foreground: #2d2a3e;
+  --destructive: #e85d5d;
+  --border: #e8e4ef;
+  --input: #e8e4ef;
+  --ring: #1D7874;
+  --chart-1: #5b8def;
+  --chart-2: #e8956d;
+  --chart-3: #2cb67d;
+  --chart-4: #f5c542;
+  --chart-5: #7c5cbf;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #2d2a3e;
+  --sidebar-primary: #2d2a3e;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f0edf5;
+  --sidebar-accent-foreground: #2d2a3e;
+  --sidebar-border: #e8e4ef;
+  --sidebar-ring: var(--ring);
+}
+
+.dark {
+  --background: #1a1725;
+  --foreground: #e8e4ef;
+  --card: #252237;
+  --card-foreground: #e8e4ef;
+
+  /* Nexo design system — dark overrides */
+  --nexo-text-primary: #E5E7EB;
+  --nexo-text-secondary: #9CA3AF;
+  --nexo-text-muted: #6B7280;
+  --nexo-card-bg: #252237;
+  --nexo-card-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  --nexo-border: #3d3a50;
+  --nexo-border-light: #2d2a3e;
+  --nexo-hover-bg: #2d2a3e;
+  --nexo-surface: #2d2a3e;
+  --nexo-nachzahlung-bg: rgba(226, 138, 92, 0.15);
+  --nexo-nachzahlung-text: #F0A878;
+  --nexo-nachzahlung-tint: rgba(226, 138, 92, 0.08);
+  --nexo-guthaben-bg: rgba(47, 174, 142, 0.15);
+  --nexo-guthaben-text: #4DCBA5;
+  --nexo-guthaben-tint: rgba(47, 174, 142, 0.08);
+  --nexo-nachzahlung-border: rgba(226, 138, 92, 0.25);
+  --nexo-nachzahlung-border-dashed: rgba(226, 138, 92, 0.3);
+  --nexo-guthaben-border: rgba(47, 174, 142, 0.25);
+  --nexo-guthaben-border-dashed: rgba(47, 174, 142, 0.3);
+  --nexo-badge-active-bg: rgba(29, 120, 116, 0.2);
+  --nexo-badge-active-text: #3DBDB8;
+  --nexo-cta: #2A9D97;
+  --nexo-illustration-opacity: 0.5;
+  --nexo-illustration-glow: rgba(47, 174, 142, 0.12);
+  --nexo-progress-track: #2d2a3e;
+  --nexo-progress-avg: #4d4a5e;
+  --nexo-divider: #3d3a50;
+  --popover: #252237;
+  --popover-foreground: #e8e4ef;
+  --primary: #2A9D97;
+  --primary-foreground: #ffffff;
+  --secondary: #2d2a3e;
+  --secondary-foreground: #e8e4ef;
+  --muted: #2d2a3e;
+  --muted-foreground: #9b95a8;
+  --accent: #2d2a3e;
+  --accent-foreground: #e8e4ef;
+  --destructive: #e85d5d;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #2A9D97;
+  --chart-1: #5b8def;
+  --chart-2: #e8956d;
+  --chart-3: #2cb67d;
+  --chart-4: #f5c542;
+  --chart-5: #7c5cbf;
+  --sidebar: #252237;
+  --sidebar-foreground: #e8e4ef;
+  --sidebar-primary: #5b8def;
+  --sidebar-primary-foreground: #e8e4ef;
+  --sidebar-accent: #2d2a3e;
+  --sidebar-accent-foreground: #e8e4ef;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: var(--ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  .dark {
+    color-scheme: dark;
+  }
+}
+
+/* Nexo custom animations */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.3s ease-out forwards;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Staggered card animations */
+.stagger-1 { animation-delay: 0ms; }
+.stagger-2 { animation-delay: 80ms; }
+.stagger-3 { animation-delay: 160ms; }
+.stagger-4 { animation-delay: 240ms; }
+.stagger-5 { animation-delay: 320ms; }
+
+/* Card hover effect */
+.nexo-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.nexo-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+.dark .nexo-card:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Smooth progress bar */
+.nexo-progress-bar {
+  transition: width 1s ease-out;
+}
+
+/* Chart line draw animation */
+@keyframes draw-chart {
+  from { stroke-dashoffset: 2000; }
+  to   { stroke-dashoffset: 0; }
+}
+.animate-draw-chart {
+  stroke-dasharray: 2000;
+  stroke-dashoffset: 2000;
+  animation: draw-chart 1.2s ease-out forwards;
+}
+
+/* Card hover lift */
+.nexo-hover-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.nexo-hover-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.10);
+}
+.dark .nexo-hover-card:hover {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
+/* Font utilities */
+.font-heading {
+  font-family: var(--font-heading), Georgia, 'Times New Roman', serif;
+}
+
+.font-body {
+  font-family: var(--font-body), system-ui, -apple-system, sans-serif;
+}

@@ -14,15 +14,15 @@ export default function ImpressumPage() {
 
       <section className="space-y-1">
         <h2 className="font-heading text-lg" style={{ fontWeight: 600 }}>Anbieter</h2>
-        <p>Faur Gabriel-Andrei</p>
-        <p>Werner-Seelenbinder 32</p>
-        <p>09484 Kurort Oberwiesenthal</p>
+        <p>[YOUR NAME]</p>
+        <p>[YOUR STREET ADDRESS]</p>
+        <p>[YOUR ZIP CODE] [YOUR CITY]</p>
         <p>Deutschland</p>
       </section>
 
       <section className="space-y-1">
         <h2 className="font-heading text-lg" style={{ fontWeight: 600 }}>Kontakt</h2>
-        <p>E-Mail: <a href="mailto:support@nexoen.de" style={{ color: 'var(--nexo-cta, #1D7874)' }}>support@nexoen.de</a></p>
+        <p>E-Mail: <a href="mailto:support@yourdomain.de" style={{ color: 'var(--nexo-cta, #1D7874)' }}>support@yourdomain.de</a></p>
         <p className="text-sm" style={{ color: 'var(--nexo-text-secondary, #6B7280)' }}>
           Kontaktanfragen werden werktags innerhalb von 24 Stunden beantwortet.
         </p>
@@ -30,9 +30,9 @@ export default function ImpressumPage() {
 
       <section className="space-y-1">
         <h2 className="font-heading text-lg" style={{ fontWeight: 600 }}>Verantwortlich für den Inhalt</h2>
-        <p>Faur Gabriel-Andrei</p>
-        <p>Werner-Seelenbinder 32</p>
-        <p>09484 Kurort Oberwiesenthal</p>
+        <p>[YOUR NAME]</p>
+        <p>[YOUR STREET ADDRESS]</p>
+        <p>[YOUR ZIP CODE] [YOUR CITY]</p>
       </section>
 
       <section className="space-y-2">

@@ -18,10 +18,10 @@ export default function DatenschutzPage() {
           Verantwortlicher im Sinne der DSGVO ist:
         </p>
         <p style={{ lineHeight: '1.7' }}>
-          Faur Gabriel-Andrei<br />
-          Werner-Seelenbinder 32<br />
-          09484 Kurort Oberwiesenthal<br />
-          E-Mail: <a href="mailto:support@nexoen.de" style={{ color: 'var(--nexo-cta, #1D7874)' }}>support@nexoen.de</a>
+          [YOUR NAME]<br />
+          [YOUR STREET ADDRESS]<br />
+          [YOUR ZIP CODE] [YOUR CITY]<br />
+          E-Mail: <a href="mailto:support@yourdomain.de" style={{ color: 'var(--nexo-cta, #1D7874)' }}>support@yourdomain.de</a>
         </p>
       </section>
 

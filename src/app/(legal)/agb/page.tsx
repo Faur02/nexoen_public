@@ -16,7 +16,7 @@ export default function AgbPage() {
         <h2 className="font-heading text-xl" style={{ fontWeight: 600 }}>1. Geltungsbereich</h2>
         <p style={{ color: 'var(--nexo-text-secondary, #6B7280)', lineHeight: '1.7' }}>
           Diese Allgemeinen Geschäftsbedingungen gelten für die Nutzung der Webanwendung nexoen, betrieben von
-          Faur Gabriel-Andrei, Werner-Seelenbinder 32, 09484 Kurort Oberwiesenthal (nachfolgend „Anbieter").
+          [YOUR NAME], [YOUR ADDRESS] (nachfolgend „Anbieter").
           Mit der Registrierung eines Kontos akzeptieren Sie diese AGB.
         </p>
       </section>
@@ -80,9 +80,8 @@ export default function AgbPage() {
           Die Widerrufsfrist beträgt vierzehn Tage ab dem Tag des Vertragsabschlusses.
         </p>
         <p style={{ color: 'var(--nexo-text-secondary, #6B7280)', lineHeight: '1.7' }}>
-          Um Ihr Widerrufsrecht auszuüben, müssen Sie uns (Faur Gabriel-Andrei, Werner-Seelenbinder 32,
-          09484 Kurort Oberwiesenthal, E-Mail:{' '}
-          <a href="mailto:support@nexoen.de" style={{ color: 'var(--nexo-cta, #1D7874)' }}>support@nexoen.de</a>)
+          Um Ihr Widerrufsrecht auszuüben, müssen Sie uns ([YOUR NAME], [YOUR ADDRESS], E-Mail:{' '}
+          <a href="mailto:support@yourdomain.de" style={{ color: 'var(--nexo-cta, #1D7874)' }}>support@yourdomain.de</a>)
           mittels einer eindeutigen Erklärung (z. B. eine E-Mail) über Ihren Entschluss, diesen Vertrag
           zu widerrufen, informieren. Zur Wahrung der Widerrufsfrist reicht es aus, dass Sie die Mitteilung
           über die Ausübung des Widerrufsrechts vor Ablauf der Widerrufsfrist absenden.
@@ -104,7 +103,7 @@ export default function AgbPage() {
             <a href="mailto:support@nexoen.de" style={{ color: 'var(--nexo-cta, #1D7874)' }}>support@nexoen.de</a>.)
           </p>
           <ul className="text-sm space-y-1" style={{ color: 'var(--nexo-text-secondary, #6B7280)', lineHeight: '1.7' }}>
-            <li>An: Faur Gabriel-Andrei, Werner-Seelenbinder 32, 09484 Kurort Oberwiesenthal, support@nexoen.de</li>
+            <li>An: [YOUR NAME], [YOUR ADDRESS], support@yourdomain.de</li>
             <li>Hiermit widerrufe ich den von mir abgeschlossenen Vertrag über die Erbringung der folgenden Dienstleistung: nexoen Jahresabonnement</li>
             <li>Bestellt am: _______________</li>
             <li>Name: _______________</li>
@@ -158,7 +157,7 @@ export default function AgbPage() {
         <h2 className="font-heading text-xl" style={{ fontWeight: 600 }}>11. Anwendbares Recht</h2>
         <p style={{ color: 'var(--nexo-text-secondary, #6B7280)', lineHeight: '1.7' }}>
           Es gilt das Recht der Bundesrepublik Deutschland. Gerichtsstand ist, soweit gesetzlich zulässig,
-          Kurort Oberwiesenthal.
+          [YOUR CITY].
         </p>
       </section>
 

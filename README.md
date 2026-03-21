@@ -1,36 +1,80 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# nexoen
 
-## Getting Started
+A German-language SaaS web app for tracking utility meters (Strom, Gas, Wasser, Heizung) with ista-style Heizkostenabrechnung forecasting.
 
-First, run the development server:
+**Live app**: [nexoen.de](https://nexoen.de)
+
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **Database & Auth**: Supabase (PostgreSQL + RLS)
+- **Payments**: Stripe
+- **Styling**: Tailwind CSS + Shadcn/ui
+- **Error tracking**: Sentry
+- **Deployment**: Vercel
+
+## Features
+
+- Track electricity, gas, water, and heating meter readings
+- Tariff management with yearly cost forecasting
+- ista Heizkostenabrechnung integration — predicts Nachzahlung or Guthaben
+- Unified Nebenkosten billing form (Heizung + Warmwasser + Betriebskosten)
+- PDF report export
+- Dark/light mode
+- Fully responsive (mobile + tablet)
+- Subscription billing (14-day trial, €19.99/year)
+
+## Local Setup
+
+1. Clone the repo
+2. Copy `.env.example` to `.env.local` and fill in your credentials:
+   - Create a [Supabase](https://supabase.com) project and run the SQL files in order:
+     1. `supabase-schema.sql`
+     2. `supabase-schema-update.sql`
+     3. `supabase-schema-settings-update.sql`
+     4. `supabase-rls-migration.sql`
+     5. `supabase-rls-performance-fix.sql`
+     6. `supabase-pricing-migration.sql`
+   - Create a [Stripe](https://stripe.com) account and set up a product with an annual price
+   - (Optional) Create a [Sentry](https://sentry.io) project for error tracking
+   - (Optional) Add a Google Analytics 4 property ID
+
+3. Install dependencies and run:
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+  app/
+    (auth)/          # Login, register, forgot password, reset password
+    (dashboard)/     # Protected app pages: dashboard, meters, reports, settings
+    (legal)/         # Impressum, Datenschutz, AGB
+    api/             # API routes: Stripe checkout, billing portal, webhooks, cron
+    auth/callback/   # Supabase OAuth/magic link callback
+  components/
+    charts/          # Recharts-based consumption and cost charts
+    forms/           # Meter, reading, tariff, abrechnung forms
+    ista/            # ista monthly consumption components
+    layout/          # Navigation, header, footer
+    settings/        # Settings tabs: profile, security, subscription, export
+    ui/              # Shadcn/ui base components
+  lib/
+    actions/         # Server actions (auth-protected DB operations)
+    calculations/    # Forecast, cost, and heating calculations
+    config/          # Subscription tier config
+    stripe/          # Stripe client/server helpers
+    supabase/        # Supabase client/server/middleware helpers
+  types/
+    database.ts      # All TypeScript interfaces
+```
 
-## Learn More
+## License
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT

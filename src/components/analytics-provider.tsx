@@ -18,5 +18,7 @@ export function AnalyticsProvider() {
   }, []);
 
   if (!consented) return null;
-  return <GoogleAnalytics gaId="G-EDSX1PP36Z" />;
+  const gaId = process.env.NEXT_PUBLIC_GA_ID;
+  if (!gaId) return null;
+  return <GoogleAnalytics gaId={gaId} />;
 }

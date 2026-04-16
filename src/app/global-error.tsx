@@ -40,7 +40,7 @@ export default function GlobalError({
           Wir haben diesen Fehler automatisch gemeldet und werden ihn beheben. Bitte versuchen Sie es später erneut.
         </p>
         <Link
-          href="/dashboard"
+          href="/"
           style={{
             display: 'inline-block',
             backgroundColor: '#5B8DEF',
@@ -52,7 +52,7 @@ export default function GlobalError({
             fontWeight: 500,
           }}
         >
-          Zum Dashboard
+          Zur Startseite
         </Link>
       </body>
     </html>

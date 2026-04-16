@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { HeatingBillingSetup } from '@/types/database';
+import { toUserError } from '@/lib/utils/errors';
 
 export async function getHeatingBillingSetup(categoryId: string): Promise<HeatingBillingSetup | null> {
   const supabase = await createClient();
@@ -55,6 +56,7 @@ export async function upsertHeatingBillingSetup(input: UpsertHeatingBillingInput
     .from('heating_billing_setups')
     .select('id')
     .eq('category_id', input.categoryId)
+    .eq('user_id', user.id)
     .single();
 
   let result;
@@ -76,10 +78,10 @@ export async function upsertHeatingBillingSetup(input: UpsertHeatingBillingInput
       })
       .eq('id', existing.id)
       .select()
-      .single() as { data: HeatingBillingSetup | null; error: Error | null };
+      .single() as { data: HeatingBillingSetup | null; error: { code?: string; message: string } | null };
 
     if (error || !data) {
-      throw new Error(error?.message || 'Fehler beim Aktualisieren der Abrechnungsdaten');
+      throw new Error(error ? toUserError(error) : 'Fehler beim Aktualisieren der Abrechnungsdaten');
     }
     result = data;
   } else {
@@ -99,10 +101,10 @@ export async function upsertHeatingBillingSetup(input: UpsertHeatingBillingInput
         abschlag_monthly: input.abschlagMonthly,
       })
       .select()
-      .single() as { data: HeatingBillingSetup | null; error: Error | null };
+      .single() as { data: HeatingBillingSetup | null; error: { code?: string; message: string } | null };
 
     if (error || !data) {
-      throw new Error(error?.message || 'Fehler beim Erstellen der Abrechnungsdaten');
+      throw new Error(error ? toUserError(error) : 'Fehler beim Erstellen der Abrechnungsdaten');
     }
     result = data;
   }
@@ -126,10 +128,10 @@ export async function deleteHeatingBillingSetup(categoryId: string): Promise<voi
     .from('heating_billing_setups')
     .delete()
     .eq('category_id', categoryId)
-    .eq('user_id', user.id);
+    .eq('user_id', user.id) as { error: { code?: string; message: string } | null };
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(toUserError(error));
   }
 
   revalidatePath('/dashboard');

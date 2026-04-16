@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { Twitter, Instagram, Linkedin } from 'lucide-react';
 import { NexoenLogo } from './nexoen-logo';
 
 export function MarketingFooter() {
@@ -28,18 +27,13 @@ export function MarketingFooter() {
               <li><Link href="/impressum" className="hover:text-teal-400 transition-colors">Impressum</Link></li>
               <li><Link href="/datenschutz" className="hover:text-teal-400 transition-colors">Datenschutz</Link></li>
               <li><Link href="/agb" className="hover:text-teal-400 transition-colors">AGB</Link></li>
+              <li><Link href="/widerruf" className="hover:text-teal-400 transition-colors">Widerruf</Link></li>
+              <li><Link href="/kuendigen" className="hover:text-teal-400 transition-colors">Verträge hier kündigen</Link></li>
             </ul>
           </div>
         </div>
         <div className="pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm">© 2026 nexoen. Alle Rechte vorbehalten.</p>
-          <div className="flex items-center gap-4">
-            {[Twitter, Instagram, Linkedin].map((Icon, i) => (
-              <a key={i} href="#" className="w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center hover:bg-teal-600 hover:text-white transition-all">
-                <Icon className="w-4 h-4" />
-              </a>
-            ))}
-          </div>
         </div>
       </div>
     </footer>

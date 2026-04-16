@@ -18,7 +18,7 @@ export default async function SettingsPage() {
   const profile = profileResult.data;
 
   return (
-    <Suspense>
+    <Suspense fallback={null}>
       <SettingsClient
         userId={user.id}
         email={user.email || ''}

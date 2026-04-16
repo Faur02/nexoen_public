@@ -22,7 +22,7 @@ export default function PressePage() {
   return (
     <>
       <style>{`
-        * { font-family: var(--font-outfit), 'Outfit', sans-serif !important; }
+        * { font-family: var(--font-body), system-ui, sans-serif !important; }
         .presse-page, .presse-page * { cursor: default; }
         .presse-page a, .presse-page button { cursor: pointer !important; }
         .font-display { font-family: var(--font-display-lp), 'Playfair Display', serif !important; }
@@ -382,7 +382,7 @@ export default function PressePage() {
                   className="w-24 h-24 rounded-full flex-shrink-0 flex items-center justify-center text-white text-2xl font-bold shadow-lg"
                   style={{ background: 'linear-gradient(135deg, #1D7874 0%, #2FAE8E 100%)' }}
                 >
-                  YN
+                  AF
                 </div>
                 <div className="text-center md:text-left">
                   <h2 className="font-display text-2xl font-bold mb-1">[YOUR NAME]</h2>

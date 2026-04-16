@@ -163,18 +163,11 @@ export async function updateTariff(
   // Verify ownership: tariff must belong to a meter owned by this user
   const { data: tariff } = await supabase
     .from('tariffs')
-    .select('meter_id')
+    .select('meter_id, meters!inner(user_id)')
     .eq('id', id)
-    .single();
+    .single() as { data: { meter_id: string; meters: { user_id: string } } | null };
   if (!tariff) throw new Error('Tarif nicht gefunden');
-
-  const { data: meter } = await supabase
-    .from('meters')
-    .select('id')
-    .eq('id', tariff.meter_id)
-    .eq('user_id', user.id)
-    .single();
-  if (!meter) throw new Error('Nicht autorisiert');
+  if ((tariff.meters as unknown as { user_id: string }).user_id !== user.id) throw new Error('Nicht autorisiert');
 
   const { data, error } = await supabase
     .from('tariffs')
@@ -197,11 +190,12 @@ export async function updateTariff(
 
   revalidatePath('/dashboard');
   revalidatePath('/meters');
+  revalidatePath(`/meters/${tariff.meter_id}`);
 
   return data;
 }
 
-export async function deleteTariff(id: string, meterId: string): Promise<void> {
+export async function deleteTariff(id: string, _meterId?: string): Promise<void> {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Nicht authentifiziert');
@@ -209,19 +203,12 @@ export async function deleteTariff(id: string, meterId: string): Promise<void> {
   // Verify ownership: tariff must belong to a meter owned by this user
   const { data: tariff } = await supabase
     .from('tariffs')
-    .select('meter_id')
+    .select('meter_id, meters!inner(user_id)')
     .eq('id', id)
-    .single();
+    .single() as { data: { meter_id: string; meters: { user_id: string } } | null };
 
   if (!tariff) throw new Error('Tarif nicht gefunden');
-
-  const { data: meter } = await supabase
-    .from('meters')
-    .select('id')
-    .eq('id', tariff.meter_id)
-    .eq('user_id', user.id)
-    .single();
-  if (!meter) throw new Error('Nicht autorisiert');
+  if ((tariff.meters as unknown as { user_id: string }).user_id !== user.id) throw new Error('Nicht autorisiert');
 
   const { error } = await supabase
     .from('tariffs')
@@ -234,5 +221,5 @@ export async function deleteTariff(id: string, meterId: string): Promise<void> {
 
   revalidatePath('/dashboard');
   revalidatePath('/meters');
-  revalidatePath(`/meters/${meterId}`);
+  revalidatePath(`/meters/${tariff.meter_id}`);
 }

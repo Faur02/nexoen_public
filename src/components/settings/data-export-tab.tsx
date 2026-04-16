@@ -77,13 +77,60 @@ export function DataExportTab() {
         );
       }
 
+      // Build category ID → meter name map (predefined meters have category_id set)
+      const categoryNameMap = new Map(
+        data.meters
+          .filter((m) => m.category_id != null)
+          .map((m) => [m.category_id!, m.name])
+      );
+
       // ista consumption section
       if (data.istaConsumption.length > 0) {
         lines.push('');
         lines.push('ista Monatsdaten');
         lines.push('Monat;Kategorie;Einheiten');
         for (const entry of data.istaConsumption) {
-          lines.push(`${entry.month};${entry.category_id};${entry.units.toString().replace('.', ',')}`);
+          const categoryName = categoryNameMap.get(entry.category_id) ?? entry.category_id;
+          lines.push(`${escapeCsvField(entry.month)};${escapeCsvField(categoryName)};${entry.units.toString().replace('.', ',')}`);
+        }
+      }
+
+      // Rooms section
+      if (data.rooms.length > 0) {
+        lines.push('');
+        lines.push('Räume');
+        lines.push('Zähler;Raumname');
+        for (const room of data.rooms) {
+          const meter = meterMap.get(room.meter_id);
+          lines.push(`${escapeCsvField(meter?.name ?? '')};${escapeCsvField(room.name)}`);
+        }
+      }
+
+      // Radiators section
+      if (data.radiators.length > 0) {
+        const roomMap = new Map(data.rooms.map((r) => [r.id, r]));
+        lines.push('');
+        lines.push('Heizkörper');
+        lines.push('Raum;Heizkörpername');
+        for (const radiator of data.radiators) {
+          const room = roomMap.get(radiator.room_id);
+          lines.push(`${escapeCsvField(room?.name ?? '')};${escapeCsvField(radiator.name)}`);
+        }
+      }
+
+      // Radiator readings section
+      if (data.radiatorReadings.length > 0) {
+        const radiatorMap = new Map(data.radiators.map((r) => [r.id, r]));
+        const roomMap2 = new Map(data.rooms.map((r) => [r.id, r]));
+        lines.push('');
+        lines.push('Heizkörper-Ablesungen');
+        lines.push('Raum;Heizkörper;Datum;Wert');
+        for (const rr of data.radiatorReadings) {
+          const radiator = radiatorMap.get(rr.radiator_id);
+          const room = radiator ? roomMap2.get(radiator.room_id) : undefined;
+          const date = new Date(rr.reading_date).toLocaleDateString('de-DE');
+          const value = rr.value.toString().replace('.', ',');
+          lines.push(`${escapeCsvField(room?.name ?? '')};${escapeCsvField(radiator?.name ?? '')};${date};${value}`);
         }
       }
 
@@ -94,7 +141,7 @@ export function DataExportTab() {
         lines.push('Abrechnungssetup');
         lines.push('Zeitraum Start;Zeitraum Ende;ista Nebenkosten/Jahr;Betriebskosten/Jahr;Vorauszahlung/Monat');
         lines.push(
-          `${ab.abrechnungszeitraum_start || ''};${ab.abrechnungszeitraum_end || ''};${(ab.ista_nebenkosten_year || 0).toString().replace('.', ',')};${(ab.kalte_betriebskosten_year || 0).toString().replace('.', ',')};${(ab.vorauszahlung_monthly || 0).toString().replace('.', ',')}`
+          `${escapeCsvField(ab.abrechnungszeitraum_start || '')};${escapeCsvField(ab.abrechnungszeitraum_end || '')};${(ab.ista_nebenkosten_year || 0).toString().replace('.', ',')};${(ab.kalte_betriebskosten_year || 0).toString().replace('.', ',')};${(ab.vorauszahlung_monthly || 0).toString().replace('.', ',')}`
         );
       }
 

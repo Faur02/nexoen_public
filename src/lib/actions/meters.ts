@@ -140,13 +140,13 @@ export async function getMeterWithDetails(id: string): Promise<MeterFull | null>
   const { data: readings } = await supabase
     .from('readings')
     .select('*')
-    .eq('meter_id', id)
+    .eq('meter_id', meter.id)
     .order('reading_date', { ascending: false }) as { data: Reading[] | null };
 
   const { data: tariffs } = await supabase
     .from('tariffs')
     .select('*')
-    .eq('meter_id', id)
+    .eq('meter_id', meter.id)
     .order('valid_from', { ascending: false }) as { data: Tariff[] | null };
 
   return {

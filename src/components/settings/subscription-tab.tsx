@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import * as Sentry from '@sentry/nextjs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BillingPortalButton } from './billing-portal-button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { SubscriptionTier } from '@/types/database';
 
 interface SubscriptionTabProps {
@@ -11,6 +11,8 @@ interface SubscriptionTabProps {
   trialEndsAt: string | null;
   userId: string;
   hasStripeSubscription: boolean;
+  cancelAtPeriodEnd: boolean;
+  subscriptionEndsAt: string | null;
 }
 
 const allFeatures = [
@@ -36,8 +38,11 @@ export function SubscriptionTab({
   trialEndsAt,
   userId,
   hasStripeSubscription,
+  cancelAtPeriodEnd,
+  subscriptionEndsAt,
 }: SubscriptionTabProps) {
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // Lazy expiry check
   const effectiveTier: SubscriptionTier =
@@ -58,13 +63,39 @@ export function SubscriptionTab({
 
       if (!response.ok) {
         const text = await response.text();
-        try { const err = JSON.parse(text); throw new Error(err.error); } catch { throw new Error('Server-Fehler beim Checkout'); }
+        let message = 'Server-Fehler beim Checkout';
+        try { const err = JSON.parse(text); if (err.error) message = err.error; } catch { /* not JSON */ }
+        throw new Error(message);
       }
       const data = await response.json();
       if (data.url && data.url.startsWith('https://checkout.stripe.com')) window.location.href = data.url;
     } catch (error) {
       Sentry.captureException(error);
-      alert('Fehler beim Starten des Checkouts. Bitte versuchen Sie es erneut.');
+      setErrorMsg('Fehler beim Starten des Checkouts. Bitte versuchen Sie es erneut.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancel = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/billing-portal', { method: 'POST' });
+      if (!response.ok) {
+        const text = await response.text();
+        let message = 'Server-Fehler';
+        try { const err = JSON.parse(text); if (err.error) message = err.error; } catch { /* not JSON */ }
+        throw new Error(message);
+      }
+      const data = await response.json();
+      if (data.url && data.url.startsWith('https://billing.stripe.com')) {
+        window.location.href = data.url;
+      } else {
+        throw new Error(data.error || 'Fehler');
+      }
+    } catch (error) {
+      Sentry.captureException(error);
+      setErrorMsg('Fehler beim Öffnen des Kündigungsportals. Bitte versuchen Sie es erneut.');
     } finally {
       setLoading(false);
     }
@@ -75,6 +106,11 @@ export function SubscriptionTab({
       {/* Status card */}
       <Card style={{ borderRadius: '4px', boxShadow: 'var(--nexo-card-shadow)' }}>
         <CardContent className="py-6">
+          {errorMsg && (
+            <Alert variant="destructive" style={{ borderRadius: '4px', marginBottom: '16px' }}>
+              <AlertDescription>{errorMsg}</AlertDescription>
+            </Alert>
+          )}
           {effectiveTier === 'trial' && (
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
@@ -85,11 +121,23 @@ export function SubscriptionTab({
                   Testphase aktiv
                 </span>
               </div>
-              <p className="font-heading" style={{ fontSize: '22px', fontWeight: 400, color: 'var(--nexo-text-primary)', margin: '0 0 4px' }}>
-                Noch {daysRemaining} {daysRemaining === 1 ? 'Tag' : 'Tage'} verbleibend
+              <p className="font-heading" style={{ fontSize: '22px', fontWeight: 400, color: 'var(--nexo-text-primary)', margin: '0 0 12px' }}>
+                Kostenlos testen
               </p>
-              <p className="font-body" style={{ fontSize: '13px', color: 'var(--nexo-text-secondary)', margin: '0 0 20px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6, maxWidth: 320 }}>
+                <span className="font-body" style={{ fontSize: '13px', color: 'var(--nexo-text-secondary)' }}>Verbleibende Tage</span>
+                <span className="font-body" style={{ fontSize: '13px', fontWeight: 700, color: '#E6A65C' }}>
+                  {daysRemaining} {daysRemaining === 1 ? 'Tag' : 'Tage'} übrig
+                </span>
+              </div>
+              <div style={{ height: 5, backgroundColor: 'var(--nexo-border)', borderRadius: 3, overflow: 'hidden', maxWidth: 320, marginBottom: 16 }}>
+                <div style={{ height: '100%', width: `${Math.round((daysRemaining / 90) * 100)}%`, backgroundColor: '#E6A65C', borderRadius: 3, transition: 'width 0.3s ease' }} />
+              </div>
+              <p className="font-body" style={{ fontSize: '13px', color: 'var(--nexo-text-secondary)', margin: '0 0 4px' }}>
                 Du hast Zugriff auf alle Funktionen.
+              </p>
+              <p className="font-body" style={{ fontSize: '12px', color: 'var(--nexo-text-secondary)', margin: '0 0 20px' }}>
+                Kleinunternehmer nach § 19 UStG – kein Umsatzsteuerausweis.
               </p>
               <button
                 onClick={handleActivate}
@@ -122,12 +170,42 @@ export function SubscriptionTab({
                 </span>
               </div>
               <p className="font-heading" style={{ fontSize: '22px', fontWeight: 400, color: 'var(--nexo-text-primary)', margin: '0 0 4px' }}>
-                nexoen Jahresabo
+                nexoen Jahresabo · 19,99 €/Jahr
               </p>
-              <p className="font-body" style={{ fontSize: '13px', color: 'var(--nexo-text-secondary)', margin: '0 0 20px' }}>
+              <p className="font-body" style={{ fontSize: '13px', color: 'var(--nexo-text-secondary)', margin: '0 0 4px' }}>
                 Du hast Zugriff auf alle Funktionen.
               </p>
-              {hasStripeSubscription && <BillingPortalButton />}
+              <p className="font-body" style={{ fontSize: '12px', color: 'var(--nexo-text-secondary)', margin: '0 0 20px' }}>
+                Kleinunternehmer nach § 19 UStG – kein Umsatzsteuerausweis.
+              </p>
+              {hasStripeSubscription && cancelAtPeriodEnd && subscriptionEndsAt && (
+                <p className="font-body" style={{ fontSize: '13px', color: 'var(--nexo-nachzahlung-text, #B45309)', marginBottom: '16px' }}>
+                  Dein Abonnement endet am{' '}
+                  <strong>
+                    {new Date(subscriptionEndsAt).toLocaleDateString('de-DE', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  </strong>{' '}
+                  und wird nicht automatisch verlängert.
+                </p>
+              )}
+              {hasStripeSubscription && (
+                <button
+                  onClick={handleCancel}
+                  disabled={loading}
+                  style={{
+                    backgroundColor: cancelAtPeriodEnd ? 'var(--nexo-cta)' : 'transparent',
+                    color: cancelAtPeriodEnd ? '#fff' : 'var(--nexo-nachzahlung-text, #B45309)',
+                    border: cancelAtPeriodEnd ? 'none' : '1px solid var(--nexo-nachzahlung-text, #B45309)',
+                    borderRadius: '4px',
+                    padding: '11px 24px',
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    cursor: loading ? 'not-allowed' : 'pointer',
+                    opacity: loading ? 0.7 : 1,
+                  }}
+                >
+                  {loading ? 'Wird geladen...' : cancelAtPeriodEnd ? 'Abonnement verlängern →' : 'Abonnement kündigen →'}
+                </button>
+              )}
             </div>
           )}
 
@@ -144,8 +222,11 @@ export function SubscriptionTab({
               <p className="font-heading" style={{ fontSize: '22px', fontWeight: 400, color: 'var(--nexo-text-primary)', margin: '0 0 4px' }}>
                 Jahresabo aktivieren
               </p>
-              <p className="font-body" style={{ fontSize: '13px', color: 'var(--nexo-text-secondary)', margin: '0 0 20px' }}>
+              <p className="font-body" style={{ fontSize: '13px', color: 'var(--nexo-text-secondary)', margin: '0 0 4px' }}>
                 Aktiviere dein Abo für weiteren Zugriff auf alle Funktionen.
+              </p>
+              <p className="font-body" style={{ fontSize: '12px', color: 'var(--nexo-text-secondary)', margin: '0 0 20px' }}>
+                Kleinunternehmer nach § 19 UStG – kein Umsatzsteuerausweis.
               </p>
               <button
                 onClick={handleActivate}

@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Meter } from '@/types/database';
 
 interface MeterActionsProps {
@@ -21,16 +22,9 @@ export function MeterActions({ meter }: MeterActionsProps) {
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const handleDelete = async () => {
-    if (
-      !confirm(
-        `Möchten Sie den Zähler "${meter.name}" wirklich löschen? Alle Zählerstände und Tarife werden ebenfalls gelöscht.`
-      )
-    ) {
-      return;
-    }
-
     setDeleting(true);
     setError(null);
     try {
@@ -44,6 +38,14 @@ export function MeterActions({ meter }: MeterActionsProps) {
 
   return (
     <div className="flex items-center gap-3">
+      <ConfirmDialog
+        open={confirmOpen}
+        title={`Zähler "${meter.name}" löschen?`}
+        description="Alle Zählerstände und Tarife werden ebenfalls gelöscht."
+        confirmLabel="Löschen"
+        onConfirm={() => { setConfirmOpen(false); handleDelete(); }}
+        onCancel={() => setConfirmOpen(false)}
+      />
       {error && (
         <Alert variant="destructive" style={{ borderRadius: '4px', padding: '8px 12px' }}>
           <AlertDescription style={{ fontSize: '13px' }}>{error}</AlertDescription>
@@ -58,7 +60,7 @@ export function MeterActions({ meter }: MeterActionsProps) {
       <DropdownMenuContent align="end">
         <DropdownMenuItem
           className="text-red-600"
-          onClick={handleDelete}
+          onClick={() => setConfirmOpen(true)}
         >
           Zähler löschen
         </DropdownMenuItem>

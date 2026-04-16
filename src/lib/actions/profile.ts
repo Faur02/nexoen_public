@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
-import { adminClient } from '@/lib/supabase/admin';
+import { getAdminClient } from '@/lib/supabase/admin';
 import { Profile, ThemePreference } from '@/types/database';
 
 interface UpdateProfileInput {
@@ -130,12 +130,14 @@ export async function updateThemePreference(theme: ThemePreference): Promise<voi
       })
       .eq('id', user.id);
 
-    if (error) {
-      console.error('Theme update error:', error);
-      // Don't throw for missing column — theme still works client-side via next-themes
+    if (error && process.env.NODE_ENV !== 'production') {
+      console.error('Theme update error:', error.message);
+      // Don't throw — theme still works client-side via next-themes
     }
   } catch (err) {
-    console.error('Failed to persist theme preference:', err);
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('Failed to persist theme preference:', err instanceof Error ? err.message : err);
+    }
     // Theme still works client-side, so don't block the user
   }
 
@@ -145,37 +147,18 @@ export async function updateThemePreference(theme: ThemePreference): Promise<voi
 export async function deleteAccount(): Promise<void> {
   const supabase = await createClient();
 
-  // Get current user
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    throw new Error('Nicht angemeldet');
-  }
+  if (!user) throw new Error('Nicht angemeldet');
 
   const uid = user.id;
 
-  // Delete all user data in correct order (children before parents)
-  // 1. Delete meters — cascades to readings, tariffs, rooms, radiators, radiator_readings
-  const { error: metersError } = await supabase.from('meters').delete().eq('user_id', uid);
-  if (metersError) throw new Error('Fehler beim Löschen der Zähler');
+  // Delete the auth user using service role.
+  // Supabase cascades automatically: auth.users → profiles → meters, categories,
+  // billing setups, ista_consumption, abrechnung_setup, notification_preferences,
+  // and all their children (readings, tariffs, rooms, radiators, radiator_readings).
+  const { error } = await getAdminClient().auth.admin.deleteUser(uid);
+  if (error) throw new Error('Fehler beim Löschen des Kontos: ' + error.message);
 
-  // 2. Delete orphaned tables not linked to meters (parallel, order doesn't matter)
-  const parallelDeletes = await Promise.all([
-    supabase.from('ista_consumption').delete().eq('user_id', uid),
-    supabase.from('heating_billing_setups').delete().eq('user_id', uid),
-    supabase.from('abrechnung_setup').delete().eq('user_id', uid),
-    supabase.from('meter_categories').delete().eq('user_id', uid),
-    supabase.from('notification_preferences').delete().eq('user_id', uid),
-  ]);
-  const failedDelete = parallelDeletes.find(r => r.error);
-  if (failedDelete) throw new Error('Fehler beim Löschen der Benutzerdaten');
-
-  // 3. Delete profile row
-  const { error: profileError } = await supabase.from('profiles').delete().eq('id', uid);
-  if (profileError) throw new Error('Fehler beim Löschen des Profils');
-
-  // 4. Sign out current session
+  // Sign out after successful deletion to clear the session cookie
   await supabase.auth.signOut();
-
-  // 5. Delete the auth user (requires service role)
-  await adminClient.auth.admin.deleteUser(uid);
 }

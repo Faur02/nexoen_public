@@ -1,7 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
-import { Meter, Reading, Tariff, HeatingBillingSetup, AbrechnungSetup, IstaConsumption, NotificationPreferences } from '@/types/database';
+import { Meter, Reading, Tariff, HeatingBillingSetup, AbrechnungSetup, IstaConsumption, NotificationPreferences, Room, Radiator, RadiatorReading } from '@/types/database';
 
 export interface ProfileExport {
   name: string | null;
@@ -18,6 +18,9 @@ export interface ExportData {
   meters: Meter[];
   readings: Reading[];
   tariffs: Tariff[];
+  rooms: Room[];
+  radiators: Radiator[];
+  radiatorReadings: RadiatorReading[];
   heatingBillingSetups: HeatingBillingSetup[];
   abrechnungSetup: AbrechnungSetup | null;
   istaConsumption: IstaConsumption[];
@@ -74,7 +77,7 @@ export async function getExportData(): Promise<ExportData> {
   const meters = metersResult.data || [];
   const meterIds = meters.map(m => m.id);
 
-  const [readingsResult, tariffsResult] = meterIds.length > 0
+  const [readingsResult, tariffsResult, roomsResult] = meterIds.length > 0
     ? await Promise.all([
         supabase
           .from('readings')
@@ -86,14 +89,48 @@ export async function getExportData(): Promise<ExportData> {
           .select('*')
           .in('meter_id', meterIds)
           .order('valid_from', { ascending: false }) as unknown as Promise<{ data: Tariff[] | null }>,
+        supabase
+          .from('rooms')
+          .select('*')
+          .in('meter_id', meterIds)
+          .order('created_at', { ascending: true }) as unknown as Promise<{ data: Room[] | null }>,
       ])
-    : [{ data: [] }, { data: [] }];
+    : [{ data: [] }, { data: [] }, { data: [] }];
+
+  const rooms = (roomsResult as { data: Room[] | null }).data || [];
+  const roomIds = rooms.map(r => r.id);
+
+  const [radiatorsResult] = roomIds.length > 0
+    ? await Promise.all([
+        supabase
+          .from('radiators')
+          .select('*')
+          .in('room_id', roomIds)
+          .order('created_at', { ascending: true }) as unknown as Promise<{ data: Radiator[] | null }>,
+      ])
+    : [{ data: [] }];
+
+  const radiators = (radiatorsResult as { data: Radiator[] | null }).data || [];
+  const radiatorIds = radiators.map(r => r.id);
+
+  const [radiatorReadingsResult] = radiatorIds.length > 0
+    ? await Promise.all([
+        supabase
+          .from('radiator_readings')
+          .select('*')
+          .in('radiator_id', radiatorIds)
+          .order('reading_date', { ascending: true }) as unknown as Promise<{ data: RadiatorReading[] | null }>,
+      ])
+    : [{ data: [] }];
 
   return {
     profile: profileResult.data,
     meters,
     readings: (readingsResult as { data: Reading[] | null }).data || [],
     tariffs: (tariffsResult as { data: Tariff[] | null }).data || [],
+    rooms,
+    radiators,
+    radiatorReadings: (radiatorReadingsResult as { data: RadiatorReading[] | null }).data || [],
     heatingBillingSetups: heatingBillingResult.data || [],
     abrechnungSetup: abrechnungResult.data,
     istaConsumption: istaResult.data || [],

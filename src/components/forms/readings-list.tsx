@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { deleteReading } from '@/lib/actions/readings';
+import { useRouter } from 'next/navigation';
+import { deleteReading, updateReading } from '@/lib/actions/readings';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Reading, MeterUnit } from '@/types/database';
@@ -14,18 +16,49 @@ interface ReadingsListProps {
 }
 
 export function ReadingsList({ readings, meterId, unit }: ReadingsListProps) {
+  const router = useRouter();
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState('');
+  const [editDate, setEditDate] = useState('');
+  const [savingId, setSavingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Möchten Sie diesen Zählerstand wirklich löschen?')) {
-      return;
-    }
+  const startEdit = (reading: Reading) => {
+    setEditingId(reading.id);
+    setEditValue(reading.value.toString());
+    setEditDate(reading.reading_date);
+    setError(null);
+  };
 
+  const cancelEdit = () => {
+    setEditingId(null);
+    setError(null);
+  };
+
+  const handleSave = async (id: string) => {
+    setSavingId(id);
+    setError(null);
+    try {
+      const parsed = parseFloat(editValue);
+      if (!isFinite(parsed) || isNaN(parsed)) throw new Error('Ungültiger Zählerstand');
+      await updateReading(id, { value: parsed, readingDate: editDate });
+      setEditingId(null);
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Fehler beim Speichern');
+    } finally {
+      setSavingId(null);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
     setDeletingId(id);
     setError(null);
     try {
       await deleteReading(id, meterId);
+      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Fehler beim Löschen des Zählerstands');
     } finally {
@@ -58,8 +91,18 @@ export function ReadingsList({ readings, meterId, unit }: ReadingsListProps) {
     return { ...reading, consumption, days };
   });
 
+  const today = new Date().toISOString().split('T')[0];
+
   return (
     <div className="space-y-0">
+      <ConfirmDialog
+        open={confirmDeleteId !== null}
+        title="Zählerstand löschen?"
+        description="Dieser Zählerstand wird unwiderruflich gelöscht."
+        confirmLabel="Löschen"
+        onConfirm={() => { const id = confirmDeleteId!; setConfirmDeleteId(null); handleDelete(id); }}
+        onCancel={() => setConfirmDeleteId(null)}
+      />
       {error && (
         <Alert variant="destructive" style={{ borderRadius: '4px', marginBottom: '12px' }}>
           <AlertDescription>{error}</AlertDescription>
@@ -99,34 +142,114 @@ export function ReadingsList({ readings, meterId, unit }: ReadingsListProps) {
               onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--nexo-hover-bg)')}
               onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
             >
+              {/* Datum */}
               <div style={{ fontWeight: 500 }}>
-                {new Date(reading.reading_date).toLocaleDateString('de-DE')}
+                {editingId === reading.id ? (
+                  <input
+                    type="date"
+                    value={editDate}
+                    max={today}
+                    onChange={(e) => setEditDate(e.target.value)}
+                    style={{
+                      border: '1px solid var(--nexo-border)',
+                      borderRadius: '4px',
+                      padding: '2px 6px',
+                      fontSize: '13px',
+                      width: '100%',
+                      background: 'var(--nexo-card-bg)',
+                      color: 'var(--nexo-text-primary)',
+                    }}
+                  />
+                ) : (
+                  new Date(reading.reading_date).toLocaleDateString('de-DE')
+                )}
               </div>
+
+              {/* Zählerstand */}
               <div className="text-right" style={{ fontFamily: 'monospace', fontWeight: 500 }}>
-                {formatNumber(reading.value)} {unit}
+                {editingId === reading.id ? (
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={editValue}
+                    onChange={(e) => setEditValue(e.target.value)}
+                    style={{
+                      border: '1px solid var(--nexo-border)',
+                      borderRadius: '4px',
+                      padding: '2px 6px',
+                      fontSize: '13px',
+                      width: '100%',
+                      textAlign: 'right',
+                      background: 'var(--nexo-card-bg)',
+                      color: 'var(--nexo-text-primary)',
+                    }}
+                  />
+                ) : (
+                  `${formatNumber(reading.value)} ${unit}`
+                )}
               </div>
+
+              {/* Verbrauch */}
               <div className="text-right" style={{ fontFamily: 'monospace' }}>
                 {reading.consumption !== null
                   ? `${formatNumber(reading.consumption)} ${unit}`
                   : '-'}
               </div>
+
+              {/* Tage */}
               <div className="text-right hidden sm:block" style={{ color: 'var(--nexo-text-secondary)' }}>
                 {reading.days !== null ? `${reading.days} Tage` : '-'}
               </div>
-              <div className="text-right">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleDelete(reading.id)}
-                  disabled={deletingId === reading.id}
-                  style={{
-                    borderRadius: '4px',
-                    color: deletingId === reading.id ? 'var(--nexo-text-muted)' : '#EF4444',
-                    fontSize: '13px',
-                  }}
-                >
-                  {deletingId === reading.id ? '...' : 'Löschen'}
-                </Button>
+
+              {/* Actions */}
+              <div className="text-right flex gap-1 justify-end">
+                {editingId === reading.id ? (
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={cancelEdit}
+                      disabled={savingId === reading.id}
+                      style={{ borderRadius: '4px', fontSize: '13px', color: 'var(--nexo-text-muted)' }}
+                    >
+                      ✕
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleSave(reading.id)}
+                      disabled={savingId === reading.id}
+                      style={{ borderRadius: '4px', fontSize: '13px', color: 'var(--nexo-guthaben-text)' }}
+                    >
+                      {savingId === reading.id ? '...' : '✓'}
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => startEdit(reading)}
+                      disabled={!!deletingId}
+                      style={{ borderRadius: '4px', fontSize: '13px', color: 'var(--nexo-text-secondary)' }}
+                    >
+                      ✎
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setConfirmDeleteId(reading.id)}
+                      disabled={deletingId === reading.id}
+                      style={{
+                        borderRadius: '4px',
+                        color: deletingId === reading.id ? 'var(--nexo-text-muted)' : '#EF4444',
+                        fontSize: '13px',
+                      }}
+                    >
+                      {deletingId === reading.id ? '...' : 'Löschen'}
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           ))}

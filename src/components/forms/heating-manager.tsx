@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -32,6 +33,8 @@ export function HeatingManager({ meterId, rooms }: HeatingManagerProps) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [expandedRooms, setExpandedRooms] = useState<Set<string>>(new Set()); // collapsed by default
+  const [confirmDeleteRoom, setConfirmDeleteRoom] = useState<string | null>(null);
+  const [confirmDeleteRadiator, setConfirmDeleteRadiator] = useState<string | null>(null);
 
   const handleAddRoom = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,7 +55,6 @@ export function HeatingManager({ meterId, rooms }: HeatingManagerProps) {
   };
 
   const handleDeleteRoom = async (roomId: string) => {
-    if (!confirm('Raum und alle Heizkörper löschen?')) return;
     setLoading(true);
     setError(null);
     try {
@@ -82,7 +84,6 @@ export function HeatingManager({ meterId, rooms }: HeatingManagerProps) {
   };
 
   const handleDeleteRadiator = async (radiatorId: string) => {
-    if (!confirm('Heizkörper löschen?')) return;
     setLoading(true);
     setError(null);
     try {
@@ -139,6 +140,21 @@ export function HeatingManager({ meterId, rooms }: HeatingManagerProps) {
 
   return (
     <div className="space-y-4">
+      <ConfirmDialog
+        open={confirmDeleteRoom !== null}
+        title="Raum löschen?"
+        description="Der Raum und alle Heizkörper darin werden unwiderruflich gelöscht."
+        confirmLabel="Löschen"
+        onConfirm={() => { const id = confirmDeleteRoom!; setConfirmDeleteRoom(null); handleDeleteRoom(id); }}
+        onCancel={() => setConfirmDeleteRoom(null)}
+      />
+      <ConfirmDialog
+        open={confirmDeleteRadiator !== null}
+        title="Heizkörper löschen?"
+        confirmLabel="Löschen"
+        onConfirm={() => { const id = confirmDeleteRadiator!; setConfirmDeleteRadiator(null); handleDeleteRadiator(id); }}
+        onCancel={() => setConfirmDeleteRadiator(null)}
+      />
       {error && (
         <Alert variant="destructive" style={{ borderRadius: '4px' }}>
           <AlertDescription>{error}</AlertDescription>
@@ -195,7 +211,7 @@ export function HeatingManager({ meterId, rooms }: HeatingManagerProps) {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={(e) => { e.stopPropagation(); handleDeleteRoom(room.id); }}
+                      onClick={(e) => { e.stopPropagation(); setConfirmDeleteRoom(room.id); }}
                       disabled={loading}
                       style={{ borderRadius: '4px', color: '#EF4444', fontSize: '12px' }}
                     >
@@ -227,7 +243,7 @@ export function HeatingManager({ meterId, rooms }: HeatingManagerProps) {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => handleDeleteRadiator(radiator.id)}
+                            onClick={() => setConfirmDeleteRadiator(radiator.id)}
                             disabled={loading}
                             style={{ borderRadius: '4px', color: '#EF4444', fontSize: '12px' }}
                           >

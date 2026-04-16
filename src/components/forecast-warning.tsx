@@ -11,10 +11,16 @@ interface ForecastWarningProps {
 }
 
 export function ForecastWarning({ currentAmount, snapshotAmount, snapshotDate, mobile }: ForecastWarningProps) {
-  // Fire-and-forget: update snapshot in DB after showing the warning
+  // Fire-and-forget: update snapshot in DB only when change is meaningful (> 10€)
   useEffect(() => {
-    updateForecastSnapshot(currentAmount).catch(() => {});
-  }, [currentAmount]);
+    if (Math.abs(currentAmount - snapshotAmount) > 10) {
+      updateForecastSnapshot(currentAmount).catch((err) => {
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('ForecastWarning: snapshot update failed', err);
+        }
+      });
+    }
+  }, [currentAmount, snapshotAmount]);
 
   const delta = currentAmount - snapshotAmount;
   const fmt = (n: number) =>

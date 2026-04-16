@@ -31,7 +31,8 @@ export default async function AbrechnungPage() {
             Abrechnung
           </h1>
           <p className="font-body text-base lg:text-xl" style={{ marginTop: '12px', color: 'var(--nexo-text-secondary)' }}>
-            Kategorien werden geladen...
+            Kategorien konnten nicht geladen werden.{' '}
+            <a href="/meters" style={{ color: 'var(--nexo-cta)', textDecoration: 'underline' }}>Zur Zählerseite →</a>
           </p>
         </div>
       </div>

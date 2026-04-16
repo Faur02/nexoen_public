@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import * as Sentry from '@sentry/nextjs';
 import { createClient } from '@/lib/supabase/server';
 import { createBillingPortalSession } from '@/lib/stripe/server';
 
@@ -33,7 +34,7 @@ export async function POST() {
 
     return NextResponse.json({ url: session.url });
   } catch (error) {
-    console.error('Billing portal error:', error instanceof Error ? error.message : 'Unknown error');
+    Sentry.captureException(error);
     return NextResponse.json(
       { error: 'Fehler beim Erstellen der Billing-Portal-Session' },
       { status: 500 }

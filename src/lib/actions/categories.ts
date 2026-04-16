@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { MeterCategory } from '@/types/database';
+import { toUserError } from '@/lib/utils/errors';
 
 const PREDEFINED_CATEGORIES = [
   { slug: 'heizung', name: 'Heizung', meter_type: 'heating', unit: 'units' },
@@ -53,9 +54,9 @@ export async function getUserCategories(): Promise<MeterCategory[]> {
     .select('*')
     .eq('user_id', user.id)
     .order('is_predefined', { ascending: false })
-    .order('created_at', { ascending: true }) as { data: MeterCategory[] | null; error: Error | null };
+    .order('created_at', { ascending: true }) as { data: MeterCategory[] | null; error: { code?: string; message: string } | null };
 
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(toUserError(error));
   const categories = data || [];
 
   // If no predefined categories exist, create them (fallback for existing users)
@@ -133,6 +134,11 @@ export async function createCategory(input: CreateCategoryInput): Promise<MeterC
   if (!trimmedName) throw new Error('Name darf nicht leer sein');
   if (trimmedName.length > 100) throw new Error('Name darf maximal 100 Zeichen lang sein');
 
+  const VALID_METER_TYPES = ['electricity', 'gas', 'water', 'heating'];
+  const VALID_UNITS = ['kWh', 'm3', 'units'];
+  if (!VALID_METER_TYPES.includes(input.meterType)) throw new Error('Ungültiger Zählertyp');
+  if (!VALID_UNITS.includes(input.unit)) throw new Error('Ungültige Einheit');
+
   // Generate slug from name (lowercase, replace spaces with hyphens)
   const slug = trimmedName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
 
@@ -147,10 +153,10 @@ export async function createCategory(input: CreateCategoryInput): Promise<MeterC
       unit: input.unit,
     })
     .select()
-    .single() as { data: MeterCategory | null; error: Error | null };
+    .single() as { data: MeterCategory | null; error: { code?: string; message: string } | null };
 
   if (error || !data) {
-    throw new Error(error?.message || 'Fehler beim Erstellen der Kategorie');
+    throw new Error(error ? toUserError(error) : 'Fehler beim Erstellen der Kategorie');
   }
 
   revalidatePath('/meters');
@@ -188,10 +194,10 @@ export async function deleteCategory(id: string): Promise<void> {
     .from('meter_categories')
     .delete()
     .eq('id', id)
-    .eq('user_id', user.id);
+    .eq('user_id', user.id) as { error: { code?: string; message: string } | null };
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(toUserError(error));
   }
 
   revalidatePath('/meters');

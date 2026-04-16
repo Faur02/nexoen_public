@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,7 +31,8 @@ export function IstaConsumptionList({ data, categorySlug }: IstaConsumptionListP
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editUnits, setEditUnits] = useState('');
   const [editKwh, setEditKwh] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const isHeizung = categorySlug === 'heizung';
@@ -49,7 +51,7 @@ export function IstaConsumptionList({ data, categorySlug }: IstaConsumptionListP
   };
 
   const handleUpdate = async (id: string) => {
-    setLoading(true);
+    setLoadingId(id);
     setError(null);
     try {
       const parsedUnits = parseFloat(editUnits);
@@ -64,12 +66,12 @@ export function IstaConsumptionList({ data, categorySlug }: IstaConsumptionListP
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Fehler beim Aktualisieren');
     } finally {
-      setLoading(false);
+      setLoadingId(null);
     }
   };
 
   const handleDelete = async (id: string) => {
-    setLoading(true);
+    setLoadingId(id);
     setError(null);
     try {
       await deleteIstaConsumption(id);
@@ -77,11 +79,20 @@ export function IstaConsumptionList({ data, categorySlug }: IstaConsumptionListP
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Fehler beim Löschen');
     } finally {
-      setLoading(false);
+      setLoadingId(null);
     }
   };
 
   return (
+    <>
+    <ConfirmDialog
+      open={confirmDeleteId !== null}
+      title="Eintrag löschen?"
+      description="Dieser Monatseintrag wird unwiderruflich gelöscht."
+      confirmLabel="Löschen"
+      onConfirm={() => { const id = confirmDeleteId!; setConfirmDeleteId(null); handleDelete(id); }}
+      onCancel={() => setConfirmDeleteId(null)}
+    />
     <Card style={{ borderRadius: '4px' }}>
       <CardHeader>
         <CardTitle style={{ fontFamily: 'var(--font-heading)', fontSize: '18px', fontWeight: 400 }}>Verlauf</CardTitle>
@@ -165,16 +176,16 @@ export function IstaConsumptionList({ data, categorySlug }: IstaConsumptionListP
                             size="sm"
                             variant="outline"
                             onClick={cancelEdit}
-                            disabled={loading}
+                            disabled={loadingId === item.id}
                           >
                             Abbrechen
                           </Button>
                           <Button
                             size="sm"
                             onClick={() => handleUpdate(item.id)}
-                            disabled={loading}
+                            disabled={loadingId === item.id}
                           >
-                            {loading ? '...' : 'Speichern'}
+                            {loadingId === item.id ? '...' : 'Speichern'}
                           </Button>
                         </div>
                       ) : (
@@ -183,7 +194,7 @@ export function IstaConsumptionList({ data, categorySlug }: IstaConsumptionListP
                             size="sm"
                             variant="outline"
                             onClick={() => startEdit(item)}
-                            disabled={loading}
+                            disabled={loadingId === item.id}
                           >
                             <span className="sm:hidden">✎</span>
                             <span className="hidden sm:inline">Bearbeiten</span>
@@ -191,11 +202,11 @@ export function IstaConsumptionList({ data, categorySlug }: IstaConsumptionListP
                           <Button
                             size="sm"
                             variant="destructive"
-                            onClick={() => handleDelete(item.id)}
-                            disabled={loading}
+                            onClick={() => setConfirmDeleteId(item.id)}
+                            disabled={loadingId === item.id}
                           >
-                            <span className="sm:hidden">{loading ? '…' : '✕'}</span>
-                            <span className="hidden sm:inline">{loading ? '...' : 'Löschen'}</span>
+                            <span className="sm:hidden">{loadingId === item.id ? '…' : '✕'}</span>
+                            <span className="hidden sm:inline">{loadingId === item.id ? '...' : 'Löschen'}</span>
                           </Button>
                         </div>
                       )}
@@ -208,5 +219,6 @@ export function IstaConsumptionList({ data, categorySlug }: IstaConsumptionListP
         )}
       </CardContent>
     </Card>
+    </>
   );
 }

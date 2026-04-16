@@ -28,7 +28,7 @@ export default function ForgotPasswordPage() {
     });
 
     if (error) {
-      setError(error.message);
+      setError('Fehler beim Senden des Links. Bitte versuchen Sie es erneut.');
       setLoading(false);
       return;
     }

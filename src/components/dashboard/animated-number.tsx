@@ -20,7 +20,7 @@ export function AnimatedNumber({
   style,
 }: AnimatedNumberProps) {
   const [display, setDisplay] = useState(0);
-  const rafRef = useRef<number>(0);
+  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
     const start = Date.now();
@@ -35,7 +35,7 @@ export function AnimatedNumber({
       }
     };
     rafRef.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafRef.current);
+    return () => { if (rafRef.current !== null) cancelAnimationFrame(rafRef.current); };
   }, [value, duration]);
 
   const formatted = display.toLocaleString('de-DE');

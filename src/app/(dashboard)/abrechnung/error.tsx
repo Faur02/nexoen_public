@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
-export default function UpgradeError({
+export default function AbrechnungError({
   error,
   reset,
 }: {
@@ -13,15 +13,15 @@ export default function UpgradeError({
   reset: () => void;
 }) {
   useEffect(() => {
-    if (process.env.NODE_ENV !== 'production') console.error('Upgrade error:', error);
+    if (process.env.NODE_ENV !== 'production') console.error('Abrechnung error:', error);
   }, [error]);
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold">Abonnement aktivieren</h1>
+        <h1 className="text-3xl font-bold">Abrechnung</h1>
         <p className="text-muted-foreground">
-          Schalten Sie alle Funktionen frei
+          Heizkosten + Betriebskosten
         </p>
       </div>
 
@@ -29,7 +29,7 @@ export default function UpgradeError({
         <CardHeader>
           <CardTitle className="text-destructive">Fehler beim Laden</CardTitle>
           <CardDescription>
-            Die Upgrade-Seite konnte nicht geladen werden.
+            Die Abrechnungsdaten konnten nicht geladen werden.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

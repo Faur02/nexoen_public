@@ -25,14 +25,14 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: "nexoen – Nebenkostenabrechnung & Heizkosten im Blick",
-  description: "Verfolge deine Nebenkosten, Heizkosten und Zählerstände das ganze Jahr. Erkenne frühzeitig ob eine Nachzahlung droht – 14 Tage kostenlos testen.",
+  description: "Verfolge deine Nebenkosten, Heizkosten und Zählerstände das ganze Jahr. Erkenne frühzeitig ob eine Nachzahlung droht – 3 Monate kostenlos testen.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://nexoen.de'),
   alternates: {
     canonical: 'https://nexoen.de',
   },
   openGraph: {
     title: "nexoen – Nebenkostenabrechnung & Heizkosten im Blick",
-    description: "Verfolge deine Nebenkosten, Heizkosten und Zählerstände das ganze Jahr. Erkenne frühzeitig ob eine Nachzahlung droht – 14 Tage kostenlos testen.",
+    description: "Verfolge deine Nebenkosten, Heizkosten und Zählerstände das ganze Jahr. Erkenne frühzeitig ob eine Nachzahlung droht – 3 Monate kostenlos testen.",
     siteName: "nexoen",
     locale: "de_DE",
     type: "website",

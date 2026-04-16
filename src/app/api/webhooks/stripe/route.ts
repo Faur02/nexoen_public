@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import Stripe from 'stripe';
-import { adminClient as supabaseAdmin } from '@/lib/supabase/admin';
+import { getAdminClient } from '@/lib/supabase/admin';
+
+const supabaseAdmin = getAdminClient();
 
 function getStripe() {
   if (!process.env.STRIPE_SECRET_KEY) {
@@ -66,7 +68,8 @@ export async function POST(request: Request) {
       }
 
       default:
-        console.log(`Unhandled event type: ${event.type}`);
+        // Unknown event types are intentionally ignored
+        break;
     }
   } catch (error) {
     console.error('Webhook handler error:', error instanceof Error ? error.message : 'Unknown error');
@@ -100,6 +103,8 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
     .update({
       subscription_tier: 'active',
       stripe_subscription_id: subscriptionId,
+      cancel_at_period_end: false,
+      subscription_ends_at: null,
       updated_at: new Date().toISOString(),
     })
     .eq('id', profile.id);
@@ -108,8 +113,8 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
     throw new Error(`Failed to update profile ${profile.id} subscription: ${updateError.message}`);
   }
 
-  console.log('Subscription activated');
 }
+
 
 async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
   const customerId = subscription.customer as string;
@@ -133,10 +138,18 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
     tier = 'expired';
   }
 
+  const cancelAtPeriodEnd = subscription.cancel_at_period_end ?? false;
+  const rawSub = subscription as unknown as Record<string, unknown>;
+  const subscriptionEndsAt = typeof rawSub.current_period_end === 'number'
+    ? new Date(rawSub.current_period_end * 1000).toISOString()
+    : null;
+
   const { error: updateError } = await supabaseAdmin
     .from('profiles')
     .update({
       subscription_tier: tier,
+      cancel_at_period_end: cancelAtPeriodEnd,
+      subscription_ends_at: subscriptionEndsAt,
       updated_at: new Date().toISOString(),
     })
     .eq('id', profile.id);
@@ -145,8 +158,8 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
     throw new Error(`Failed to update subscription tier for ${profile.id}: ${updateError.message}`);
   }
 
-  console.log(`Subscription updated to ${tier} (Stripe status: ${status})`);
 }
+
 
 async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   const customerId = subscription.customer as string;
@@ -166,6 +179,8 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
     .update({
       subscription_tier: 'expired',
       stripe_subscription_id: null,
+      cancel_at_period_end: false,
+      subscription_ends_at: null,
       updated_at: new Date().toISOString(),
     })
     .eq('id', profile.id);
@@ -174,8 +189,8 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
     throw new Error(`Failed to downgrade profile ${profile.id}: ${updateError.message}`);
   }
 
-  console.log('Subscription cancelled, set to expired');
 }
+
 
 async function handlePaymentFailed(invoice: Stripe.Invoice) {
   const customerId = invoice.customer as string;

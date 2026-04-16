@@ -67,7 +67,7 @@ export function PricingCard({
           <span className="font-heading" style={{ fontSize: '36px', fontWeight: 400, color: 'var(--nexo-text-primary)' }}>
             {price}
           </span>
-          <span style={{ color: 'var(--nexo-text-secondary)', marginLeft: '4px' }}>/Monat</span>
+          <span style={{ color: 'var(--nexo-text-secondary)', marginLeft: '4px' }}>/Jahr</span>
         </div>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col">

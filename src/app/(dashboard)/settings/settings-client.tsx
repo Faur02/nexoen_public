@@ -188,6 +188,8 @@ export function SettingsClient({
               trialEndsAt={profile?.trial_ends_at || null}
               userId={userId}
               hasStripeSubscription={!!profile?.stripe_subscription_id}
+              cancelAtPeriodEnd={profile?.cancel_at_period_end ?? false}
+              subscriptionEndsAt={profile?.subscription_ends_at ?? null}
             />
           </TabsContent>
 

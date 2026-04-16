@@ -57,5 +57,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'yearly',
       priority: 0.3,
     },
+    {
+      url: `${BASE_URL}/presse`,
+      lastModified: new Date('2026-03-01'),
+      changeFrequency: 'yearly' as const,
+      priority: 0.3,
+    },
+    {
+      url: `${BASE_URL}/kuendigen`,
+      lastModified: new Date('2026-03-01'),
+      changeFrequency: 'yearly',
+      priority: 0.3,
+    },
+    {
+      url: `${BASE_URL}/widerruf`,
+      lastModified: new Date('2026-03-01'),
+      changeFrequency: 'yearly',
+      priority: 0.3,
+    },
   ];
 }

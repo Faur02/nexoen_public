@@ -89,7 +89,7 @@ export function ReportActions({ meters, combinedForecast, subscriptionTier }: Re
           <div class="data-grid three-col">
             <div class="data-card">
               <div class="data-label">Tagesverbrauch (&#216;)</div>
-              <div class="data-value">${formatNumber(meter.dailyAverage)} ${meter.unit}</div>
+              <div class="data-value">${formatNumber(meter.dailyAverage)} ${escapeHtml(meter.unit)}</div>
             </div>
             <div class="data-card">
               <div class="data-label">Monatskosten (gesch.)</div>
@@ -106,7 +106,7 @@ export function ReportActions({ meters, combinedForecast, subscriptionTier }: Re
             <div class="data-grid ${hasAbschlag ? 'four-col' : 'three-col'}">
               <div class="data-card-sm">
                 <div class="data-label">Arbeitspreis</div>
-                <div class="data-value-sm">${meter.tariff.arbeitspreis} &euro;/${meter.unit}</div>
+                <div class="data-value-sm">${meter.tariff.arbeitspreis} &euro;/${escapeHtml(meter.unit)}</div>
               </div>
               <div class="data-card-sm">
                 <div class="data-label">Grundpreis</div>
@@ -135,7 +135,7 @@ export function ReportActions({ meters, combinedForecast, subscriptionTier }: Re
               <thead>
                 <tr>
                   <th>Datum</th>
-                  <th style="text-align: right;">Zählerstand (${meter.unit})</th>
+                  <th style="text-align: right;">Zählerstand (${escapeHtml(meter.unit)})</th>
                   ${meter.readings.length > 1 ? '<th style="text-align: right;">Verbrauch</th>' : ''}
                 </tr>
               </thead>

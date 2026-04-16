@@ -24,12 +24,7 @@ export function NewMeterForm() {
 
   const handleTypeChange = (newType: MeterType) => {
     setType(newType);
-    switch (newType) {
-      case 'electricity': setUnit('kWh'); break;
-      case 'gas':         setUnit('kWh'); break;
-      case 'water':       setUnit('m3');  break;
-      case 'heating':     setUnit('units'); break;
-    }
+    setUnit('kWh');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

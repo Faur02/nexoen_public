@@ -4,16 +4,13 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ANALYTICS_CONSENT_KEY, setAnalyticsConsent } from '@/lib/analytics';
 
-const DISMISSED_KEY = 'nexo_cookie_notice_dismissed';
-
 export function CookieNotice() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     try {
       const alreadyDecided = localStorage.getItem(ANALYTICS_CONSENT_KEY) !== null;
-      const oldDismissed = localStorage.getItem(DISMISSED_KEY);
-      if (!alreadyDecided && !oldDismissed) setVisible(true);
+      if (!alreadyDecided) setVisible(true);
     } catch {
       // localStorage not available
     }

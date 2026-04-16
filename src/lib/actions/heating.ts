@@ -117,6 +117,24 @@ async function assertMeterOwnership(supabase: Awaited<ReturnType<typeof createCl
   if (!data) throw new Error('Nicht autorisiert');
 }
 
+async function assertRoomBelongsToMeter(supabase: Awaited<ReturnType<typeof createClient>>, roomId: string, meterId: string): Promise<void> {
+  const { data } = await supabase.from('rooms').select('id').eq('id', roomId).eq('meter_id', meterId).single();
+  if (!data) throw new Error('Nicht autorisiert');
+}
+
+async function assertRadiatorBelongsToMeter(supabase: Awaited<ReturnType<typeof createClient>>, radiatorId: string, meterId: string): Promise<void> {
+  const { data: rad } = await supabase.from('radiators').select('room_id').eq('id', radiatorId).single();
+  if (!rad) throw new Error('Nicht autorisiert');
+  const { data: room } = await supabase.from('rooms').select('id').eq('id', rad.room_id).eq('meter_id', meterId).single();
+  if (!room) throw new Error('Nicht autorisiert');
+}
+
+async function assertRadiatorReadingBelongsToMeter(supabase: Awaited<ReturnType<typeof createClient>>, readingId: string, meterId: string): Promise<void> {
+  const { data: reading } = await supabase.from('radiator_readings').select('radiator_id').eq('id', readingId).single();
+  if (!reading) throw new Error('Nicht autorisiert');
+  await assertRadiatorBelongsToMeter(supabase, reading.radiator_id, meterId);
+}
+
 export async function createRoom(input: CreateRoomInput): Promise<Room> {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -150,6 +168,7 @@ export async function updateRoom(id: string, name: string, meterId: string): Pro
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Nicht authentifiziert');
   await assertMeterOwnership(supabase, meterId, user.id);
+  await assertRoomBelongsToMeter(supabase, id, meterId);
 
   const trimmedName = name.trim();
   if (!trimmedName) throw new Error('Name darf nicht leer sein');
@@ -176,6 +195,7 @@ export async function deleteRoom(id: string, meterId: string): Promise<void> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Nicht authentifiziert');
   await assertMeterOwnership(supabase, meterId, user.id);
+  await assertRoomBelongsToMeter(supabase, id, meterId);
 
   const { error } = await supabase
     .from('rooms')
@@ -204,6 +224,7 @@ export async function createRadiator(input: CreateRadiatorInput): Promise<Radiat
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Nicht authentifiziert');
   await assertMeterOwnership(supabase, input.meterId, user.id);
+  await assertRoomBelongsToMeter(supabase, input.roomId, input.meterId);
 
   const trimmedName = input.name.trim();
   if (!trimmedName) throw new Error('Name darf nicht leer sein');
@@ -232,6 +253,7 @@ export async function updateRadiator(id: string, name: string, meterId: string):
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Nicht authentifiziert');
   await assertMeterOwnership(supabase, meterId, user.id);
+  await assertRadiatorBelongsToMeter(supabase, id, meterId);
 
   const trimmedName = name.trim();
   if (!trimmedName) throw new Error('Name darf nicht leer sein');
@@ -258,6 +280,7 @@ export async function deleteRadiator(id: string, meterId: string): Promise<void>
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Nicht authentifiziert');
   await assertMeterOwnership(supabase, meterId, user.id);
+  await assertRadiatorBelongsToMeter(supabase, id, meterId);
 
   const { error } = await supabase
     .from('radiators')
@@ -287,6 +310,11 @@ export async function createRadiatorReading(input: CreateRadiatorReadingInput): 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Nicht authentifiziert');
   await assertMeterOwnership(supabase, input.meterId, user.id);
+  await assertRadiatorBelongsToMeter(supabase, input.radiatorId, input.meterId);
+
+  if (!isFinite(input.value) || isNaN(input.value)) throw new Error('Ungültiger Messwert');
+  const today = new Date().toISOString().split('T')[0];
+  if (input.readingDate > today) throw new Error('Das Ablesedatum darf nicht in der Zukunft liegen');
 
   const { data, error } = await supabase
     .from('radiator_readings')
@@ -324,6 +352,15 @@ export async function updateRadiatorReading(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Nicht authentifiziert');
   await assertMeterOwnership(supabase, meterId, user.id);
+  await assertRadiatorReadingBelongsToMeter(supabase, id, meterId);
+
+  if (input.value !== undefined) {
+    if (!isFinite(input.value) || isNaN(input.value)) throw new Error('Ungültiger Messwert');
+  }
+  if (input.readingDate !== undefined) {
+    const today = new Date().toISOString().split('T')[0];
+    if (input.readingDate > today) throw new Error('Das Ablesedatum darf nicht in der Zukunft liegen');
+  }
 
   const { data, error } = await supabase
     .from('radiator_readings')
@@ -350,6 +387,7 @@ export async function deleteRadiatorReading(id: string, meterId: string): Promis
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Nicht authentifiziert');
   await assertMeterOwnership(supabase, meterId, user.id);
+  await assertRadiatorReadingBelongsToMeter(supabase, id, meterId);
 
   const { error } = await supabase
     .from('radiator_readings')
@@ -376,6 +414,15 @@ export async function createBulkRadiatorReadings(input: BulkRadiatorReadingInput
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Nicht authentifiziert');
   await assertMeterOwnership(supabase, input.meterId, user.id);
+
+  // Validate date is not in the future
+  const today = new Date().toISOString().split('T')[0];
+  if (input.readingDate > today) throw new Error('Das Ablesedatum darf nicht in der Zukunft liegen');
+  // Validate and verify each radiator
+  for (const r of input.readings) {
+    if (!isFinite(r.value) || isNaN(r.value)) throw new Error('Ungültiger Messwert');
+    await assertRadiatorBelongsToMeter(supabase, r.radiatorId, input.meterId);
+  }
 
   const insertData = input.readings.map(r => ({
     radiator_id: r.radiatorId,

@@ -23,6 +23,14 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
+  const passwordRules = [
+    { test: (p: string) => p.length >= 8 },
+    { test: (p: string) => /[A-Z]/.test(p) },
+    { test: (p: string) => /[a-z]/.test(p) },
+    { test: (p: string) => /[0-9]/.test(p) },
+    { test: (p: string) => /[^A-Za-z0-9]/.test(p) },
+  ];
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -32,8 +40,9 @@ export default function RegisterPage() {
       return;
     }
 
-    if (password.length < 8) {
-      setError('Passwort muss mindestens 8 Zeichen lang sein');
+    const allRulesPassed = passwordRules.every(r => r.test(password));
+    if (!allRulesPassed) {
+      setError('Das Passwort muss mindestens 8 Zeichen sowie Groß- und Kleinbuchstaben, eine Zahl und ein Sonderzeichen enthalten.');
       return;
     }
 
@@ -53,7 +62,18 @@ export default function RegisterPage() {
     });
 
     if (error) {
-      setError('Registrierung fehlgeschlagen. Bitte prüfen Sie Ihre Eingaben und versuchen Sie es erneut.');
+      const msg = error.message.toLowerCase();
+      if (msg.includes('already registered') || msg.includes('already exists') || msg.includes('user already')) {
+        setError('Diese E-Mail-Adresse ist bereits registriert. Bitte melden Sie sich an oder nutzen Sie "Passwort vergessen".');
+      } else if (msg.includes('password') && (msg.includes('weak') || msg.includes('short'))) {
+        setError('Das Passwort ist zu schwach. Bitte wählen Sie ein stärkeres Passwort.');
+      } else if (msg.includes('invalid email') || msg.includes('email')) {
+        setError('Ungültige E-Mail-Adresse. Bitte prüfen Sie Ihre Eingabe.');
+      } else if (msg.includes('rate limit') || msg.includes('too many')) {
+        setError('Zu viele Versuche. Bitte warten Sie kurz und versuchen Sie es erneut.');
+      } else {
+        setError('Registrierung fehlgeschlagen: ' + error.message);
+      }
       setLoading(false);
       return;
     }

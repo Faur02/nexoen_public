@@ -13,7 +13,7 @@ import {
   Cell,
 } from 'recharts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Reading, Tariff, MeterUnit } from '@/types/database';
+import { Reading, Tariff, MeterUnit, MeterType } from '@/types/database';
 import { calculateMonthlyBreakdown } from '@/lib/calculations/monthly';
 import { formatCurrency } from '@/lib/calculations/costs';
 
@@ -21,7 +21,7 @@ interface MonthlyCostChartProps {
   readings: Reading[];
   tariff: Tariff | null;
   unit: MeterUnit;
-  meterType: 'electricity' | 'gas' | 'water' | 'heating';
+  meterType: MeterType;
 }
 
 const cardStyle = {

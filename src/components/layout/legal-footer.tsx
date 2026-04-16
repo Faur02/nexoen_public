@@ -32,6 +32,22 @@ export function LegalFooter() {
       >
         AGB
       </Link>
+      <span style={{ opacity: 0.3 }}>·</span>
+      <Link
+        href="/widerruf"
+        className="hover:underline transition-opacity opacity-70 hover:opacity-100"
+        style={{ color: 'inherit' }}
+      >
+        Widerruf
+      </Link>
+      <span style={{ opacity: 0.3 }}>·</span>
+      <Link
+        href="/kuendigen"
+        className="hover:underline transition-opacity opacity-70 hover:opacity-100"
+        style={{ color: 'inherit' }}
+      >
+        Verträge kündigen
+      </Link>
     </footer>
   );
 }

@@ -13,12 +13,12 @@ import {
   Bar,
 } from 'recharts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Reading, MeterUnit } from '@/types/database';
+import { Reading, MeterUnit, MeterType } from '@/types/database';
 
 interface ConsumptionChartProps {
   readings: Reading[];
   unit: MeterUnit;
-  meterType: 'electricity' | 'gas' | 'water' | 'heating';
+  meterType: MeterType;
 }
 
 interface ChartDataPoint {

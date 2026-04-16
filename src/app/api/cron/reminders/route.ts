@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { timingSafeEqual as cryptoTimingSafeEqual, createHash } from 'crypto';
-import { adminClient } from '@/lib/supabase/admin';
+import { getAdminClient } from '@/lib/supabase/admin';
 
 function timingSafeEqual(a: string, b: string): boolean {
   const ha = createHash('sha256').update(a).digest();
@@ -212,9 +212,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'RESEND_API_KEY not configured' }, { status: 500 });
   }
 
-  const supabase = adminClient;
+  const supabase = getAdminClient();
 
-  // Send trial expiry reminders (1–3 days before trial ends)
+  // Send trial expiry reminders (1–3 days before trial ends).
+  // Intentionally bypasses email_reminders_enabled: trial expiry is a transactional
+  // notification (account lifecycle), not a marketing email. Users must know their
+  // trial is ending regardless of marketing preferences.
   const now = new Date();
   const in3Days = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
   const { data: trialExpiring } = await supabase
@@ -224,12 +227,16 @@ export async function GET(request: NextRequest) {
     .gte('trial_ends_at', now.toISOString())
     .lte('trial_ends_at', in3Days.toISOString());
 
-  for (const profile of trialExpiring || []) {
-    const daysLeft = Math.max(0, Math.ceil((new Date(profile.trial_ends_at!).getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+  for (const profile of (trialExpiring || []) as { email: string; name: string | null; trial_ends_at: string | null }[]) {
+    const msLeft = new Date(profile.trial_ends_at!).getTime() - now.getTime();
+    const daysLeft = Math.max(0, Math.ceil(msLeft / (1000 * 60 * 60 * 24)));
+    // Only send at specific day thresholds (3, 2, 1) to avoid duplicates on the same day
+    if (daysLeft !== 3 && daysLeft !== 2 && daysLeft !== 1) continue;
+
     const greeting = profile.name ? `Hallo ${escapeHtml(profile.name)}` : 'Hallo';
     const html = buildTrialExpiryHtml(greeting, daysLeft);
 
-    await fetch('https://api.resend.com/emails', {
+    const trialRes = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${resendApiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -239,6 +246,9 @@ export async function GET(request: NextRequest) {
         html,
       }),
     });
+    if (!trialRes.ok) {
+      console.error(`Trial reminder failed for ${profile.email}: ${trialRes.status}`);
+    }
   }
 
   // Fetch all users with reminders enabled
@@ -254,32 +264,37 @@ export async function GET(request: NextRequest) {
   let sent = 0;
   let failed = 0;
 
-  for (const profile of profiles) {
+  for (const profile of profiles as { id: string; email: string; name: string | null; email_reminders_enabled: boolean }[]) {
     try {
       // Check for overdue meters (no reading in last 30 days)
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-      const { data: meters } = await supabase
+      const { data: metersRaw } = await supabase
         .from('meters')
         .select('id')
         .eq('user_id', profile.id)
         .is('category_id', null); // only custom meters (Strom/Gas)
+      const meters = metersRaw as { id: string }[] | null;
 
       let hasOverdueMeters = false;
       if (meters && meters.length > 0) {
         const meterIds = meters.map(m => m.id);
-        const { data: recentReadings } = await supabase
+        const { data: recentReadingsRaw } = await supabase
           .from('readings')
           .select('meter_id')
           .in('meter_id', meterIds)
           .gte('reading_date', thirtyDaysAgo.toISOString().split('T')[0]);
+        const recentReadings = recentReadingsRaw as { meter_id: string }[] | null;
 
         const readMeters = new Set((recentReadings || []).map(r => r.meter_id));
         hasOverdueMeters = meterIds.some(id => !readMeters.has(id));
       }
 
-      // Get forecast + billing period data
+      // Get forecast + billing period data.
+      // Architectural decision: uses pre-computed forecast_snapshot_amount stored by the
+      // dashboard. Users who have never saved Abrechnung data will have null here and
+      // receive emails without a forecast amount (handled by null checks below).
       const { data: abrechnungSetup } = await supabase
         .from('abrechnung_setup')
         .select('forecast_snapshot_amount, vorauszahlung_monthly, abrechnungszeitraum_start')

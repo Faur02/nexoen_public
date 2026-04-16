@@ -18,7 +18,13 @@ export default function BlogPage() {
   const featured = getFeaturedPost();
   const gridPosts = getGridPosts();
 
-  const filtered = gridPosts.filter((p) => {
+  // Show featured post only when it matches the active category (or no filter)
+  const showFeatured = activeCategory === 'Alle' || featured.category === activeCategory;
+
+  // When category filter hides the featured post, include it in the grid too
+  const allPosts = showFeatured ? gridPosts : [featured, ...gridPosts];
+
+  const filtered = allPosts.filter((p) => {
     const matchCat = activeCategory === 'Alle' || p.category === activeCategory;
     const matchSearch = search === '' || p.title.toLowerCase().includes(search.toLowerCase()) || p.excerpt.toLowerCase().includes(search.toLowerCase());
     return matchCat && matchSearch;
@@ -43,7 +49,7 @@ export default function BlogPage() {
   return (
     <>
       <style>{`
-        * { font-family: var(--font-outfit), 'Outfit', sans-serif !important; }
+        * { font-family: var(--font-body), system-ui, sans-serif !important; }
         .font-display { font-family: var(--font-display-lp), 'Playfair Display', serif !important; }
         .gradient-text {
           background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
@@ -87,7 +93,7 @@ export default function BlogPage() {
         </section>
 
         {/* Featured Post */}
-        <section className="pb-12 px-4 sm:px-6 lg:px-8">
+        {showFeatured && <section className="pb-12 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto scroll-reveal">
             <Link href={`/blog/${featured.slug}`} className="block">
               <div className="featured-card bg-white rounded-[4px] overflow-hidden border border-slate-200 cursor-pointer group">
@@ -135,7 +141,7 @@ export default function BlogPage() {
               </div>
             </Link>
           </div>
-        </section>
+        </section>}
 
         {/* Filter & Search */}
         <section className="py-6 px-4 sm:px-6 lg:px-8 border-b border-slate-200 bg-white">
@@ -254,7 +260,7 @@ export default function BlogPage() {
             </h2>
             <p className="text-xl text-slate-400 mb-10 max-w-2xl mx-auto">
               Lass dich nie wieder von deiner Nebenkostenabrechnung überraschen.
-              Teste nexoen 14 Tage kostenlos – ohne Kreditkarte.
+              Teste nexoen 3 Monate kostenlos – ohne Kreditkarte.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
               <Link href="/register" className="cta-button text-white px-10 py-5 rounded-[4px] font-bold text-lg shadow-2xl flex items-center justify-center gap-2">

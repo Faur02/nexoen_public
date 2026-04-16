@@ -1171,7 +1171,7 @@ export default async function DashboardPage() {
             const trialDaysLeft = trialEndsAt
               ? Math.max(0, Math.ceil((trialEndsAt.getTime() - Date.now()) / 86400000))
               : null;
-            const trialPct = trialDaysLeft !== null ? Math.round((trialDaysLeft / 14) * 100) : null;
+            const trialPct = trialDaysLeft !== null ? Math.round((trialDaysLeft / 90) * 100) : null;
 
             // Contour line points for decorative background
             const pts1: [number,number][] = [[0,120],[150,95],[300,110],[450,85],[600,100]];
@@ -1216,7 +1216,7 @@ export default async function DashboardPage() {
                   </div>
 
                   {/* Trial progress — integrated, no box */}
-                  {trialDaysLeft !== null && (
+                  {trialDaysLeft !== null && trialDaysLeft > 0 && (
                     <div style={{ maxWidth: 340 }}>
                       <div className="flex items-center justify-between" style={{ marginBottom: 6 }}>
                         <span style={{ fontSize: '13px', color: 'var(--nexo-text-secondary)' }}>

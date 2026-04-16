@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -107,7 +107,7 @@ export function AbrechnungForm({
   };
 
   // Build preview setups for live calculation
-  const forecast: CombinedForecastResult | null = (() => {
+  const forecast: CombinedForecastResult | null = useMemo(() => {
     const tba = parseFloat(totalBuildingArea);
     const ya = parseFloat(yourArea);
     const gp = parseFloat(grundkostenPercent);
@@ -164,7 +164,13 @@ export function AbrechnungForm({
       warmwasserIstaData,
       periodStart,
     );
-  })();
+  }, [
+    totalBuildingArea, yourArea, grundkostenPercent, verbrauchskostenPercent,
+    heizungTotalCost, heizungTotalUnits, heizungYourUnits, heizungCategoryId,
+    wwTotalCost, wwTotalUnits, wwYourUnits, warmwasserCategoryId,
+    kalteBetriebskosten, istaNebenkostenYear, vorauszahlungMonthly,
+    zeitraumStart, rooms, waterReadings, heizungIstaData, warmwasserIstaData,
+  ]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

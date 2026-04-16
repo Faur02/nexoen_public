@@ -35,7 +35,7 @@ export async function getNotificationPreferences(userId: string): Promise<Notifi
       .from('notification_preferences')
       .select('*')
       .eq('user_id', userId)
-      .single() as { data: NotificationPreferences | null; error: any };
+      .single() as { data: NotificationPreferences | null; error: { code?: string; message: string } | null };
 
     if (existing) {
       return existing;
@@ -87,7 +87,9 @@ export async function updateNotificationPreferences(
       }, { onConflict: 'user_id' });
 
     if (error) {
-      console.error('Notification preferences update error:', error);
+      if (process.env.NODE_ENV !== 'production') {
+        console.error('Notification preferences update error:', error instanceof Error ? error.message : String(error));
+      }
       throw new Error('Benachrichtigungseinstellungen konnten nicht gespeichert werden.');
     }
   } catch (err) {
@@ -95,7 +97,9 @@ export async function updateNotificationPreferences(
       throw err;
     }
     // Table might not exist yet — not a user error
-    console.error('notification_preferences table may not exist yet');
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('notification_preferences table may not exist yet');
+    }
     throw new Error('Benachrichtigungstabelle ist noch nicht eingerichtet. Bitte führen Sie die Datenbank-Migration aus.');
   }
 

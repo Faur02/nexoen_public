@@ -13,7 +13,7 @@ export default function MetersError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error('Meters error:', error);
+    if (process.env.NODE_ENV !== 'production') console.error('Meters error:', error);
   }, [error]);
 
   return (

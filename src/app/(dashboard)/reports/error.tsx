@@ -12,7 +12,7 @@ export default function ReportsError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error('Reports error:', error);
+    if (process.env.NODE_ENV !== 'production') console.error('Reports error:', error);
   }, [error]);
 
   return (

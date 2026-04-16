@@ -15,7 +15,7 @@ ALTER TABLE profiles DROP CONSTRAINT IF EXISTS profiles_subscription_tier_check;
 UPDATE profiles SET subscription_tier = 'active'
   WHERE subscription_tier IN ('plus', 'pro');
 --    Free users → trial with a 14-day grace period from now
-UPDATE profiles SET subscription_tier = 'trial', trial_ends_at = NOW() + INTERVAL '14 days'
+UPDATE profiles SET subscription_tier = 'trial', trial_ends_at = NOW() + INTERVAL '90 days'
   WHERE subscription_tier = 'free';
 
 -- 4. Now add the new constraint (data is already clean)
@@ -31,17 +31,17 @@ UPDATE profiles SET
 CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO profiles (id, email, name, subscription_tier, trial_ends_at)
+  INSERT INTO public.profiles (id, email, name, subscription_tier, trial_ends_at)
   VALUES (
     NEW.id,
     NEW.email,
     NEW.raw_user_meta_data->>'name',
     'trial',
-    NOW() + INTERVAL '14 days'
+    NOW() + INTERVAL '90 days'
   );
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 -- Verify the migration
 SELECT id, subscription_tier, trial_ends_at, stripe_customer_id FROM profiles LIMIT 10;

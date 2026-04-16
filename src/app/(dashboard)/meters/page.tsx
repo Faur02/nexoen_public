@@ -11,6 +11,8 @@ const meterDotColors: Record<MeterType, string> = {
   gas: '#E28A5C',
   water: '#2FAE8E',
   heating: '#E6A65C',
+  cold_water: '#5B8DEF',
+  warm_water: '#2FAE8E',
 };
 
 const categoryColors: Record<string, string> = {
@@ -162,7 +164,7 @@ export default async function MetersPage() {
             : null;
 
           return (
-            <Link key={category.id} href={`/meters/${meter!.id}`}>
+            <Link key={category.id} href={meter ? `/meters/${meter.id}` : '#'}>
               <div
                 className={`nexo-card cursor-pointer animate-fade-in-up stagger-${cardIndex} opacity-0`}
                 style={{

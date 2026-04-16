@@ -41,6 +41,8 @@ const householdAverages: Record<MeterType, { value: number; unit: string; label:
   gas: { value: 37.0, unit: 'kWh', label: 'Durchschnitt Haushalt 3 Personen' },
   water: { value: 0.39, unit: 'm\u00B3', label: 'Durchschnitt Haushalt 3 Personen' },
   heating: { value: 0, unit: 'units', label: 'Durchschnitt Haushalt 3 Personen' },
+  cold_water: { value: 0.26, unit: 'm\u00B3', label: 'Durchschnitt Haushalt 3 Personen' },
+  warm_water: { value: 0.13, unit: 'm\u00B3', label: 'Durchschnitt Haushalt 3 Personen' },
 };
 
 const meterDotColors: Record<MeterType, string> = {
@@ -48,6 +50,8 @@ const meterDotColors: Record<MeterType, string> = {
   gas: '#E28A5C',
   water: '#2FAE8E',
   heating: '#E6A65C',
+  cold_water: '#5B8DEF',
+  warm_water: '#2FAE8E',
 };
 
 // Category-specific colors (override meterDotColors for predefined categories)

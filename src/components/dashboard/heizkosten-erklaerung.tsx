@@ -8,7 +8,9 @@ interface HeizkostenErklaerungProps {
 }
 
 export function HeizkostenErklaerung({ heizung, warmwasser, accentColor = '#E6A65C' }: HeizkostenErklaerungProps) {
-  const diff = heizung.unitsRatio - heizung.areaRatio;
+  const unitsRatio = heizung.unitsRatio ?? 0;
+  const areaRatio = heizung.areaRatio ?? 0;
+  const diff = unitsRatio - areaRatio;
 
   let verdict: string;
   let verdictColor: string;

@@ -1,6 +1,6 @@
 export type SubscriptionTier = 'trial' | 'active' | 'expired';
 export type ThemePreference = 'light' | 'dark' | 'system';
-export type MeterType = 'electricity' | 'gas' | 'water' | 'heating';
+export type MeterType = 'electricity' | 'gas' | 'water' | 'heating' | 'cold_water' | 'warm_water';
 export type MeterUnit = 'kWh' | 'm3' | 'units';
 export type CategorySlug = 'heizung' | 'kaltwasser' | 'warmwasser' | string;
 
@@ -12,6 +12,8 @@ export interface Profile {
   theme: ThemePreference;
   stripe_customer_id: string | null;
   stripe_subscription_id: string | null;
+  cancel_at_period_end: boolean;
+  subscription_ends_at: string | null;
   trial_ends_at: string | null;
   email_reminders_enabled: boolean;
   created_at: string;
@@ -229,6 +231,8 @@ export const meterTypeLabels: Record<MeterType, string> = {
   gas: 'Gas',
   water: 'Wasser',
   heating: 'Heizung',
+  cold_water: 'Kaltwasser',
+  warm_water: 'Warmwasser',
 };
 
 export const meterUnitLabels: Record<MeterUnit, string> = {
@@ -242,6 +246,8 @@ export const meterTypeColors: Record<MeterType, 'default' | 'secondary' | 'outli
   gas: 'secondary',
   water: 'outline',
   heating: 'destructive',
+  cold_water: 'outline',
+  warm_water: 'outline',
 };
 
 // Supabase Database type for type safety

@@ -32,6 +32,15 @@ export async function createIstaConsumption(input: CreateIstaConsumptionInput): 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Nicht authentifiziert');
 
+  // Verify categoryId belongs to the current user
+  const { data: categoryCheck } = await supabase
+    .from('meter_categories')
+    .select('id')
+    .eq('id', input.categoryId)
+    .eq('user_id', user.id)
+    .single();
+  if (!categoryCheck) throw new Error('Nicht autorisiert');
+
   // Validate YYYY-MM format
   if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(input.month)) {
     throw new Error('Ungültiges Monatsformat (YYYY-MM erwartet)');
@@ -75,6 +84,7 @@ export async function updateIstaConsumption(id: string, input: UpdateIstaConsump
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Nicht authentifiziert');
 
+  if (!isFinite(input.units) || isNaN(input.units)) throw new Error('Ungültige Einheitenangabe');
   if (input.units < 0) throw new Error('Einheiten können nicht negativ sein');
 
   const { data, error } = await supabase

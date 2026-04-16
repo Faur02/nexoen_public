@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -51,6 +52,17 @@ const navItems: NavItem[] = [
         <path d="M8 7h8" />
         <path d="M8 11h8" />
         <path d="M8 15h5" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Anleitung',
+    href: '/anleitung',
+    icon: (
+      <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={iconStroke} strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+        <line x1="12" y1="17" x2="12.01" y2="17" />
       </svg>
     ),
   },
@@ -167,7 +179,7 @@ interface DashboardNavProps {
   subscription: SubscriptionTier;
 }
 
-export function DashboardNav({ subscription }: DashboardNavProps) {
+function DashboardNavInner({ subscription }: DashboardNavProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const isOnSettings = pathname === '/settings' || pathname.startsWith('/settings/');
@@ -257,5 +269,13 @@ export function DashboardNav({ subscription }: DashboardNavProps) {
         })}
       </nav>
     </>
+  );
+}
+
+export function DashboardNav({ subscription }: DashboardNavProps) {
+  return (
+    <Suspense fallback={null}>
+      <DashboardNavInner subscription={subscription} />
+    </Suspense>
   );
 }

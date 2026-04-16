@@ -12,7 +12,7 @@ export default function SettingsError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error('Settings error:', error);
+    if (process.env.NODE_ENV !== 'production') console.error('Settings error:', error);
   }, [error]);
 
   return (

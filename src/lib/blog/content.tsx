@@ -10,7 +10,7 @@ function NexoenCTA() {
         Tracke Strom, Heizung und Wasser das ganze Jahr. Erhalte eine Prognose für deine Nachzahlung. Verstehe endlich, was auf deiner Abrechnung steht.
       </p>
       <Link href="/register" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'linear-gradient(135deg, #0f766e, #14b8a6)', color: '#fff', fontWeight: 700, borderRadius: '4px', padding: '0.625rem 1.25rem', fontSize: '0.9rem', textDecoration: 'none', alignSelf: 'flex-start' }}>
-        Kostenlos starten – 14 Tage gratis
+        Kostenlos starten – 3 Monate gratis
       </Link>
     </div>
   );

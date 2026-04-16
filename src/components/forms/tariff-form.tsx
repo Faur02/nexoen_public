@@ -7,10 +7,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { HelpTooltip } from '@/components/ui/help-tooltip';
+import { MeterType } from '@/types/database';
 
 interface TariffFormProps {
   meterId: string;
-  meterType: 'electricity' | 'gas' | 'water' | 'heating';
+  meterType: MeterType;
   meterUnit: 'kWh' | 'm3' | 'units';
 }
 

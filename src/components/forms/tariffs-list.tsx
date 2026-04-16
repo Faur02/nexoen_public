@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { deleteTariff } from '@/lib/actions/tariffs';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tariff } from '@/types/database';
@@ -14,18 +16,17 @@ interface TariffsListProps {
 }
 
 export function TariffsList({ tariffs, meterId, meterUnit = 'kWh' }: TariffsListProps) {
+  const router = useRouter();
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Möchten Sie diesen Tarif wirklich löschen?')) {
-      return;
-    }
-
     setDeletingId(id);
     setError(null);
     try {
       await deleteTariff(id, meterId);
+      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Fehler beim Löschen des Tarifs');
     } finally {
@@ -51,6 +52,14 @@ export function TariffsList({ tariffs, meterId, meterUnit = 'kWh' }: TariffsList
 
   return (
     <div className="space-y-4">
+      <ConfirmDialog
+        open={confirmDeleteId !== null}
+        title="Tarif löschen?"
+        description="Dieser Tarif wird unwiderruflich gelöscht."
+        confirmLabel="Löschen"
+        onConfirm={() => { const id = confirmDeleteId!; setConfirmDeleteId(null); handleDelete(id); }}
+        onCancel={() => setConfirmDeleteId(null)}
+      />
       {error && (
         <Alert variant="destructive" style={{ borderRadius: '4px' }}>
           <AlertDescription>{error}</AlertDescription>
@@ -105,7 +114,7 @@ export function TariffsList({ tariffs, meterId, meterUnit = 'kWh' }: TariffsList
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => handleDelete(tariff.id)}
+                onClick={() => setConfirmDeleteId(tariff.id)}
                 disabled={deletingId === tariff.id}
                 style={{
                   borderRadius: '4px',

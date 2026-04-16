@@ -21,7 +21,7 @@ export default function DatenschutzPage() {
           [YOUR NAME]<br />
           [YOUR STREET ADDRESS]<br />
           [YOUR ZIP CODE] [YOUR CITY]<br />
-          E-Mail: <a href="mailto:support@yourdomain.de" style={{ color: 'var(--nexo-cta, #1D7874)' }}>support@yourdomain.de</a>
+          E-Mail: <a href="mailto:support@nexoen.de" style={{ color: 'var(--nexo-cta, #1D7874)' }}>support@nexoen.de</a>
         </p>
       </section>
 
@@ -59,7 +59,8 @@ export default function DatenschutzPage() {
             Die Webanwendung wird gehostet bei Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, USA.
             Vercel verarbeitet dabei technische Verbindungsdaten (IP-Adressen, Anfrage-Metadaten) bei der
             Auslieferung der Seite. Die Datenübertragung in die USA wird durch Standardvertragsklauseln (SCC)
-            gemäß Art. 46 Abs. 2 lit. c DSGVO abgesichert. Weitere Informationen:{' '}
+            gemäß Art. 46 Abs. 2 lit. c DSGVO sowie das EU-US Data Privacy Framework (DPF) abgesichert.
+            Vercel ist unter dem EU-US DPF zertifiziert. Weitere Informationen:{' '}
             <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--nexo-cta, #1D7874)' }}>vercel.com/legal/privacy-policy</a>
           </p>
         </div>
@@ -91,9 +92,10 @@ export default function DatenschutzPage() {
           <h3 className="font-semibold">Stripe (Zahlungsabwicklung)</h3>
           <p style={{ color: 'var(--nexo-text-secondary, #6B7280)', lineHeight: '1.7' }}>
             Zahlungen werden über Stripe (Stripe Inc., San Francisco, CA, USA) abgewickelt. Stripe
-            verarbeitet Zahlungsdaten nach eigenem Datenschutzstandard. Wir erhalten lediglich den
-            Zahlungsstatus und eine Kundennummer. Die Datenübertragung in die USA wird durch
-            Standardvertragsklauseln (SCC) gemäß Art. 46 Abs. 2 lit. c DSGVO abgesichert.
+            verarbeitet Zahlungsdaten als eigenverantwortlicher Auftragsverarbeiter. Wir erhalten lediglich
+            den Zahlungsstatus und eine Kundennummer. Die Datenübertragung in die USA wird durch
+            Standardvertragsklauseln (SCC) gemäß Art. 46 Abs. 2 lit. c DSGVO sowie das EU-US Data Privacy
+            Framework (DPF) abgesichert. Stripe ist unter dem EU-US DPF zertifiziert.
             Weitere Informationen:{' '}
             <a href="https://stripe.com/de/privacy" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--nexo-cta, #1D7874)' }}>stripe.com/de/privacy</a>
           </p>
@@ -102,13 +104,15 @@ export default function DatenschutzPage() {
         <div>
           <h3 className="font-semibold">Google Analytics (Websiteanalyse)</h3>
           <p style={{ color: 'var(--nexo-text-secondary, #6B7280)', lineHeight: '1.7' }}>
-            Mit Ihrer Einwilligung verwenden wir Google Analytics 4 (Google Ireland Limited, Gordon House,
-            Barrow Street, Dublin 4, Irland). Dabei werden Nutzungsdaten (besuchte Seiten, Verweildauer,
-            Herkunft) erfasst. Google Analytics 4 speichert IP-Adressen nicht vollständig. Daten können
-            an Google LLC-Server in den USA übertragen werden; die Übertragung wird durch
-            Standardvertragsklauseln (SCC) gemäß Art. 46 Abs. 2 lit. c DSGVO abgesichert. Google Analytics
-            wird nur geladen, wenn Sie die Analyse-Cookies im Cookie-Banner akzeptieren. Ihre Einwilligung
-            können Sie jederzeit widerrufen, indem Sie Cookies in Ihrem Browser löschen. Weitere
+            Mit Ihrer Einwilligung (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG) verwenden wir Google
+            Analytics 4 (Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland). Dabei
+            werden Nutzungsdaten (besuchte Seiten, Verweildauer, Herkunft) erfasst. Google Analytics 4
+            speichert IP-Adressen anonymisiert. Daten können an Google LLC-Server in den USA übertragen
+            werden; die Übertragung wird durch Standardvertragsklauseln (SCC) gemäß Art. 46 Abs. 2 lit. c
+            DSGVO sowie das EU-US Data Privacy Framework (DPF) abgesichert. Google ist unter dem EU-US DPF
+            zertifiziert. Google Analytics wird technisch blockiert und nur geladen, wenn Sie die
+            Analyse-Cookies im Cookie-Banner ausdrücklich akzeptieren. Ihre Einwilligung können Sie
+            jederzeit widerrufen, indem Sie Cookies in Ihrem Browser löschen. Weitere
             Informationen:{' '}
             <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--nexo-cta, #1D7874)' }}>policies.google.com/privacy</a>
           </p>
@@ -131,21 +135,30 @@ export default function DatenschutzPage() {
       <section className="space-y-2">
         <h2 className="font-heading text-xl" style={{ fontWeight: 600 }}>5. Cookies</h2>
         <p style={{ color: 'var(--nexo-text-secondary, #6B7280)', lineHeight: '1.7' }}>
-          Diese Website verwendet zwei Arten von Cookies:
+          Diese Website verwendet Cookies gemäß § 25 TDDDG (Telekommunikation-Digitale-Dienste-Datenschutz-Gesetz).
+          Nicht technisch notwendige Cookies werden erst nach Ihrer ausdrücklichen Einwilligung gesetzt und
+          technisch blockiert, bis diese erteilt wird.
         </p>
         <ul className="list-disc pl-5 space-y-1" style={{ color: 'var(--nexo-text-secondary, #6B7280)', lineHeight: '1.7' }}>
-          <li><strong style={{ color: 'var(--nexo-text-primary, #1F2937)' }}>Technisch notwendige Cookies:</strong> Session-Cookies von Supabase für die Authentifizierung. Diese sind für den Betrieb des Dienstes erforderlich und können nicht deaktiviert werden.</li>
-          <li><strong style={{ color: 'var(--nexo-text-primary, #1F2937)' }}>Analyse-Cookies (optional):</strong> Google Analytics 4 Cookies zur Websiteanalyse. Diese werden nur gesetzt, wenn Sie im Cookie-Banner auf „Akzeptieren" klicken. Sie können Ihre Einwilligung jederzeit durch Löschen der Cookies widerrufen.</li>
+          <li><strong style={{ color: 'var(--nexo-text-primary, #1F2937)' }}>Technisch notwendige Cookies (§ 25 Abs. 2 TDDDG):</strong> Session-Cookies von Supabase für die Authentifizierung. Diese sind für den Betrieb des Dienstes unbedingt erforderlich und benötigen keine Einwilligung.</li>
+          <li><strong style={{ color: 'var(--nexo-text-primary, #1F2937)' }}>Analyse-Cookies (nur mit Einwilligung nach § 25 Abs. 1 TDDDG):</strong> Google Analytics 4 Cookies zur Websiteanalyse. Diese werden technisch blockiert und erst gesetzt, wenn Sie im Cookie-Banner ausdrücklich auf „Akzeptieren" klicken. Ihre Einwilligung können Sie jederzeit widerrufen.</li>
         </ul>
       </section>
 
       <section className="space-y-2">
         <h2 className="font-heading text-xl" style={{ fontWeight: 600 }}>6. Speicherdauer</h2>
         <p style={{ color: 'var(--nexo-text-secondary, #6B7280)', lineHeight: '1.7' }}>
-          Ihre Daten werden gespeichert, solange Ihr Konto aktiv ist. Nach Kontolöschung werden alle
-          personenbezogenen Daten innerhalb von 30 Tagen gelöscht. Gesetzliche Aufbewahrungsfristen
-          (z. B. für Rechnungsdaten: 10 Jahre nach § 147 AO) bleiben unberührt.
+          Wir speichern Ihre personenbezogenen Daten nur so lange, wie es für den jeweiligen Zweck
+          erforderlich ist (Art. 5 Abs. 1 lit. e DSGVO):
         </p>
+        <ul className="list-disc pl-5 space-y-1" style={{ color: 'var(--nexo-text-secondary, #6B7280)', lineHeight: '1.7' }}>
+          <li><strong style={{ color: 'var(--nexo-text-primary, #1F2937)' }}>Kontodaten (E-Mail, Name):</strong> Bis zur Löschung Ihres Kontos. Nach Kontolöschung werden alle Daten innerhalb von 30 Tagen entfernt.</li>
+          <li><strong style={{ color: 'var(--nexo-text-primary, #1F2937)' }}>Nutzungsdaten (Zählerstände, Abrechnungsdaten):</strong> Bis zur Kontolöschung; Sie können diese jederzeit selbst löschen.</li>
+          <li><strong style={{ color: 'var(--nexo-text-primary, #1F2937)' }}>Zahlungs- und Rechnungsdaten:</strong> 10 Jahre gemäß § 147 AO (steuerliche Aufbewahrungspflicht).</li>
+          <li><strong style={{ color: 'var(--nexo-text-primary, #1F2937)' }}>Session-Cookies:</strong> Ablauf mit Ende der Browser-Sitzung oder nach konfigurierbarer Zeitspanne.</li>
+          <li><strong style={{ color: 'var(--nexo-text-primary, #1F2937)' }}>Fehlerprotokolle (Sentry):</strong> Automatische Löschung nach 90 Tagen.</li>
+          <li><strong style={{ color: 'var(--nexo-text-primary, #1F2937)' }}>Analyse-Daten (Google Analytics):</strong> 14 Monate (Standardeinstellung GA4), danach automatische Löschung.</li>
+        </ul>
       </section>
 
       <section className="space-y-2">
@@ -166,7 +179,16 @@ export default function DatenschutzPage() {
         </p>
         <p style={{ color: 'var(--nexo-text-secondary, #6B7280)', lineHeight: '1.7' }}>
           Sie haben außerdem das Recht, sich bei der zuständigen Datenschutzaufsichtsbehörde zu beschweren.
+          Zuständige Aufsichtsbehörde für den Anbieter ist:
         </p>
+        <div className="rounded-[4px] p-4" style={{ background: 'var(--nexo-bg, #F9FAFB)', border: '1px solid var(--nexo-border, #E5E7EB)' }}>
+          <p style={{ lineHeight: '1.8' }}>
+            Sächsischer Datenschutzbeauftragter<br />
+            Devrientstraße 5<br />
+            01067 Dresden<br />
+            <a href="https://www.saechsdsb.de" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--nexo-cta, #1D7874)' }}>www.saechsdsb.de</a>
+          </p>
+        </div>
       </section>
     </article>
   );

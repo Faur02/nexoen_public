@@ -2,8 +2,6 @@
 
 A German-language SaaS web app for tracking utility meters (Strom, Gas, Wasser, Heizung) with ista-style Heizkostenabrechnung forecasting.
 
-**Live app**: [nexoen.de](https://nexoen.de)
-
 ## Tech Stack
 
 - **Framework**: Next.js 16 (App Router)
